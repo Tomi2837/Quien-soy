@@ -1,0 +1,242 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quien soy</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #101114;
+      --panel: #181a20;
+      --panel-2: #20232b;
+      --text: #f3f4f6;
+      --muted: #a1a1aa;
+      --accent: #7c3aed;
+      --accent-2: #5b21b6;
+      --ok: #22c55e;
+      --danger: #ef4444;
+      --border: #2b2f39;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: radial-gradient(circle at top, #1a1d24 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: rgba(24, 26, 32, .95);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 25px 70px rgba(0,0,0,.35);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+    }
+
+    .sub {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1.2fr .9fr auto auto;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    input, select, button {
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 16px;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid rgba(124, 58, 237, .35);
+      border-color: var(--accent);
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 700;
+      transition: .18s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    .primary {
+      background: linear-gradient(180deg, var(--accent), var(--accent-2));
+      border: 0;
+    }
+    .secondary {
+      background: #252833;
+    }
+    .danger {
+      background: #2b1417;
+      border-color: #532127;
+      color: #ffb4b4;
+    }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      background: #14161c;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .game {
+      display: grid;
+      gap: 14px;
+    }
+
+    .status {
+      min-height: 28px;
+      color: #d4d4d8;
+      font-weight: 600;
+    }
+
+    .board {
+      min-height: 360px;
+      border-radius: 24px;
+      border: 1px dashed #3a3f4d;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)),
+        #111318;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 28px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .countdown {
+      font-size: clamp(60px, 12vw, 150px);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .char-name {
+      font-size: clamp(28px, 5vw, 54px);
+      line-height: 1.05;
+      font-weight: 900;
+      margin-bottom: 10px;
+      word-break: break-word;
+    }
+
+    .char-meta {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: #c4b5fd;
+      font-size: 15px;
+    }
+
+    .hidden-card {
+      filter: blur(16px);
+      user-select: none;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        grid-template-columns: 1fr;
+      }
+      .board {
+        min-height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <h1>Quien soy</h1>
+      <p class="sub">
+        Escribi <b>ok</b>, esperá 3 segundos y aparece un personaje al azar.
+        Esta version no genera imagenes, asi que va rapido y no te rompe las bolas con costos.
+      </p>
+
+      <div class="topbar">
+        <input id="triggerInput" type="text" placeholder='Escribi "ok"' />
+        <select id="categorySelect">
+          <option value="all">Todas las categorias</option>
+        </select>
+        <button id="playBtn" class="primary">Jugar</button>
+        <button id="resetBtn" class="secondary">Reset</button>
+      </div>
+
+      <div class="stats">
+        <div class="pill" id="totalCount"></div>
+        <div class="pill" id="remainingCount"></div>
+        <div class="pill" id="currentCategory"></div>
+      </div>
+
+      <div class="game">
+        <div class="status" id="status">Esperando...</div>
+
+        <div class="board" id="board">
+          <div>
+            <div class="char-meta">Todavia no salio nadie</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="revealBtn" class="secondary" disabled>Mostrar / ocultar</button>
+          <button id="nextBtn" class="secondary" disabled>Siguiente</button>
+          <button id="copyBtn" class="secondary" disabled>Copiar personaje</button>
+          <button id="historyBtn" class="secondary">Ver historial</button>
+        </div>
+
+        <div class="footer-note">
+          Te deje exactamente <b>1000 personajes</b>. No uno mas, no uno menos.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
