@@ -1,12 +1,14 @@
-<!-- index.html -->
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quien soy</title>
+
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -54,24 +56,38 @@
       font-weight: 700;
       border-radius: 12px;
       cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
     }
 
     button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
     }
   </style>
 </head>
+
 <body>
+
   <div class="app">
-    <div id="nombre">Toca empezar</div>
+
+    <div id="nombre">
+      Toca empezar
+    </div>
 
     <div class="botones">
       <button id="btnEmpezar">Empezar</button>
       <button id="btnSiguiente" disabled>Siguiente</button>
     </div>
+
   </div>
 
-  <script type="module" src="./app.js"></script>
+  <!-- importante: el ?v=2 evita cache viejo -->
+  <script type="module" src="./app.js?v=2"></script>
+
 </body>
 </html>
