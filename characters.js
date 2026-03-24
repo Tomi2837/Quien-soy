@@ -59,7 +59,6 @@ const VARIANTS_BY_CATEGORY = {
 };
 
 const BASE_CHARACTERS = [
-  // tv_farandula 25
   { name: "Susana Gimenez", category: "tv_farandula" },
   { name: "Moria Casan", category: "tv_farandula" },
   { name: "Marcelo Tinelli", category: "tv_farandula" },
@@ -86,7 +85,6 @@ const BASE_CHARACTERS = [
   { name: "Mirtha Legrand", category: "tv_farandula" },
   { name: "Juana Viale", category: "tv_farandula" },
 
-  // musica 25
   { name: "Charly Garcia", category: "musica" },
   { name: "Gustavo Cerati", category: "musica" },
   { name: "Luis Alberto Spinetta", category: "musica" },
@@ -113,7 +111,6 @@ const BASE_CHARACTERS = [
   { name: "Palito Ortega", category: "musica" },
   { name: "Axel", category: "musica" },
 
-  // futbol 25
   { name: "Lionel Messi", category: "futbol" },
   { name: "Diego Maradona", category: "futbol" },
   { name: "Juan Roman Riquelme", category: "futbol" },
@@ -140,7 +137,6 @@ const BASE_CHARACTERS = [
   { name: "Julian Alvarez", category: "futbol" },
   { name: "Enzo Fernandez", category: "futbol" },
 
-  // deporte_general 25
   { name: "Manu Ginobili", category: "deporte_general" },
   { name: "Juan Martin del Potro", category: "deporte_general" },
   { name: "Guillermo Vilas", category: "deporte_general" },
@@ -167,7 +163,6 @@ const BASE_CHARACTERS = [
   { name: "Luis Scola", category: "deporte_general" },
   { name: "Brian Toledo", category: "deporte_general" },
 
-  // streaming_internet 25
   { name: "Coscu", category: "streaming_internet" },
   { name: "Momo", category: "streaming_internet" },
   { name: "Spreen", category: "streaming_internet" },
@@ -194,7 +189,6 @@ const BASE_CHARACTERS = [
   { name: "Auronplay", category: "streaming_internet" },
   { name: "TheGrefg", category: "streaming_internet" },
 
-  // politica_actualidad 25
   { name: "Javier Milei", category: "politica_actualidad" },
   { name: "Cristina Fernandez de Kirchner", category: "politica_actualidad" },
   { name: "Mauricio Macri", category: "politica_actualidad" },
@@ -221,7 +215,6 @@ const BASE_CHARACTERS = [
   { name: "Lula da Silva", category: "politica_actualidad" },
   { name: "Donald Trump", category: "politica_actualidad" },
 
-  // memes_virales 25
   { name: "Ricardo Fort", category: "memes_virales" },
   { name: "Tano Pasman", category: "memes_virales" },
   { name: "Zulma Lobato", category: "memes_virales" },
@@ -248,7 +241,6 @@ const BASE_CHARACTERS = [
   { name: "Matias Ale", category: "memes_virales" },
   { name: "Virginia Gallardo", category: "memes_virales" },
 
-  // ficcion_arg_pop 25
   { name: "Pepe Argento", category: "ficcion_arg_pop" },
   { name: "Moni Argento", category: "ficcion_arg_pop" },
   { name: "Coqui Argento", category: "ficcion_arg_pop" },
@@ -315,4 +307,3 @@ function buildPool() {
 }
 
 export const CHARACTER_POOL = buildPool();
-export const CATEGORIES = CATEGORY_LABELS;
