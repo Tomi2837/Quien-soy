@@ -1,3 +1,4 @@
+// app.js
 import { CHARACTER_POOL } from "./characters.js";
 
 const nombre = document.getElementById("nombre");
@@ -36,8 +37,10 @@ async function mostrarPersonaje() {
 
   nombre.textContent = "3";
   await esperar(1000);
+
   nombre.textContent = "2";
   await esperar(1000);
+
   nombre.textContent = "1";
   await esperar(1000);
 
