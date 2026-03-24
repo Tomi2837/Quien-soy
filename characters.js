@@ -1,233 +1,318 @@
-// app.js
-import { CHARACTER_POOL, CATEGORIES } from "./characters.js";
+// characters.js
+const VARIANTS_BY_CATEGORY = {
+  tv_farandula: [
+    "version clasica",
+    "en vivo",
+    "modo escandalo",
+    "modo meme",
+    "edicion prime"
+  ],
+  musica: [
+    "version clasica",
+    "en escenario",
+    "modo backstage",
+    "modo meme",
+    "edicion prime"
+  ],
+  futbol: [
+    "version clasica",
+    "festejando",
+    "en conferencia",
+    "modo meme",
+    "edicion prime"
+  ],
+  deporte_general: [
+    "version clasica",
+    "pre competencia",
+    "post victoria",
+    "modo meme",
+    "edicion prime"
+  ],
+  streaming_internet: [
+    "version clasica",
+    "en stream",
+    "reaccionando",
+    "modo meme",
+    "edicion prime"
+  ],
+  politica_actualidad: [
+    "version clasica",
+    "en debate",
+    "modo conferencia",
+    "modo meme",
+    "edicion prime"
+  ],
+  memes_virales: [
+    "version clasica",
+    "modo viral",
+    "modo reaccion",
+    "modo meme",
+    "edicion cursed"
+  ],
+  ficcion_arg_pop: [
+    "version clasica",
+    "modo episodio",
+    "modo reaccion",
+    "modo meme",
+    "edicion prime"
+  ]
+};
 
-const triggerInput = document.getElementById("triggerInput");
-const categorySelect = document.getElementById("categorySelect");
-const playBtn = document.getElementById("playBtn");
-const resetBtn = document.getElementById("resetBtn");
-const revealBtn = document.getElementById("revealBtn");
-const nextBtn = document.getElementById("nextBtn");
-const copyBtn = document.getElementById("copyBtn");
-const historyBtn = document.getElementById("historyBtn");
+const BASE_CHARACTERS = [
+  // tv_farandula 25
+  { name: "Susana Gimenez", category: "tv_farandula" },
+  { name: "Moria Casan", category: "tv_farandula" },
+  { name: "Marcelo Tinelli", category: "tv_farandula" },
+  { name: "Guido Kaczka", category: "tv_farandula" },
+  { name: "Marley", category: "tv_farandula" },
+  { name: "Santiago del Moro", category: "tv_farandula" },
+  { name: "Dario Barassi", category: "tv_farandula" },
+  { name: "Ivan de Pineda", category: "tv_farandula" },
+  { name: "Pampita", category: "tv_farandula" },
+  { name: "Wanda Nara", category: "tv_farandula" },
+  { name: "Zaira Nara", category: "tv_farandula" },
+  { name: "Lizy Tagliani", category: "tv_farandula" },
+  { name: "Georgina Barbarossa", category: "tv_farandula" },
+  { name: "Vero Lozano", category: "tv_farandula" },
+  { name: "Angel de Brito", category: "tv_farandula" },
+  { name: "Yanina Latorre", category: "tv_farandula" },
+  { name: "Marcelo Polino", category: "tv_farandula" },
+  { name: "Flor de la V", category: "tv_farandula" },
+  { name: "Carmen Barbieri", category: "tv_farandula" },
+  { name: "Nazarena Velez", category: "tv_farandula" },
+  { name: "Catherine Fulop", category: "tv_farandula" },
+  { name: "Paula Chaves", category: "tv_farandula" },
+  { name: "Sergio Lapegue", category: "tv_farandula" },
+  { name: "Mirtha Legrand", category: "tv_farandula" },
+  { name: "Juana Viale", category: "tv_farandula" },
 
-const board = document.getElementById("board");
-const statusEl = document.getElementById("status");
-const totalCountEl = document.getElementById("totalCount");
-const remainingCountEl = document.getElementById("remainingCount");
-const currentCategoryEl = document.getElementById("currentCategory");
+  // musica 25
+  { name: "Charly Garcia", category: "musica" },
+  { name: "Gustavo Cerati", category: "musica" },
+  { name: "Luis Alberto Spinetta", category: "musica" },
+  { name: "Fito Paez", category: "musica" },
+  { name: "Andres Calamaro", category: "musica" },
+  { name: "Lali", category: "musica" },
+  { name: "Tini", category: "musica" },
+  { name: "Maria Becerra", category: "musica" },
+  { name: "Duki", category: "musica" },
+  { name: "Bizarrap", category: "musica" },
+  { name: "Nicki Nicole", category: "musica" },
+  { name: "Emilia", category: "musica" },
+  { name: "Wos", category: "musica" },
+  { name: "Trueno", category: "musica" },
+  { name: "Tiago PZK", category: "musica" },
+  { name: "La Joaqui", category: "musica" },
+  { name: "Cazzu", category: "musica" },
+  { name: "Nathy Peluso", category: "musica" },
+  { name: "Dillom", category: "musica" },
+  { name: "Luck Ra", category: "musica" },
+  { name: "Abel Pintos", category: "musica" },
+  { name: "Soledad Pastorutti", category: "musica" },
+  { name: "Ricky Maravilla", category: "musica" },
+  { name: "Palito Ortega", category: "musica" },
+  { name: "Axel", category: "musica" },
 
-let currentCharacter = null;
-let currentHidden = false;
-let currentPool = [];
-let usedIds = new Set();
-let history = [];
+  // futbol 25
+  { name: "Lionel Messi", category: "futbol" },
+  { name: "Diego Maradona", category: "futbol" },
+  { name: "Juan Roman Riquelme", category: "futbol" },
+  { name: "Carlos Tevez", category: "futbol" },
+  { name: "Martin Palermo", category: "futbol" },
+  { name: "Angel Di Maria", category: "futbol" },
+  { name: "Emiliano Dibu Martinez", category: "futbol" },
+  { name: "Lionel Scaloni", category: "futbol" },
+  { name: "Marcelo Gallardo", category: "futbol" },
+  { name: "Juan Sebastian Veron", category: "futbol" },
+  { name: "Pablo Aimar", category: "futbol" },
+  { name: "Javier Mascherano", category: "futbol" },
+  { name: "Sergio Aguero", category: "futbol" },
+  { name: "Gonzalo Higuain", category: "futbol" },
+  { name: "Ramon Diaz", category: "futbol" },
+  { name: "Ariel Ortega", category: "futbol" },
+  { name: "Fernando Gago", category: "futbol" },
+  { name: "Rodrigo De Paul", category: "futbol" },
+  { name: "Javier Zanetti", category: "futbol" },
+  { name: "Gabriel Batistuta", category: "futbol" },
+  { name: "Claudio Caniggia", category: "futbol" },
+  { name: "Juan Pablo Sorin", category: "futbol" },
+  { name: "Lisandro Martinez", category: "futbol" },
+  { name: "Julian Alvarez", category: "futbol" },
+  { name: "Enzo Fernandez", category: "futbol" },
 
-function shuffle(array) {
-  const arr = [...array];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+  // deporte_general 25
+  { name: "Manu Ginobili", category: "deporte_general" },
+  { name: "Juan Martin del Potro", category: "deporte_general" },
+  { name: "Guillermo Vilas", category: "deporte_general" },
+  { name: "Luciana Aymar", category: "deporte_general" },
+  { name: "Gabriela Sabatini", category: "deporte_general" },
+  { name: "Franco Colapinto", category: "deporte_general" },
+  { name: "Juan Manuel Fangio", category: "deporte_general" },
+  { name: "Agustin Canapino", category: "deporte_general" },
+  { name: "Pechito Lopez", category: "deporte_general" },
+  { name: "Marcos Di Palma", category: "deporte_general" },
+  { name: "Paula Pareto", category: "deporte_general" },
+  { name: "Santiago Lange", category: "deporte_general" },
+  { name: "Cecilia Carranza", category: "deporte_general" },
+  { name: "Agustin Creevy", category: "deporte_general" },
+  { name: "Hugo Porta", category: "deporte_general" },
+  { name: "Carlos Monzon", category: "deporte_general" },
+  { name: "Nicolino Locche", category: "deporte_general" },
+  { name: "Delfina Pignatiello", category: "deporte_general" },
+  { name: "Carla Rebecchi", category: "deporte_general" },
+  { name: "Marcos Patronelli", category: "deporte_general" },
+  { name: "Alejandro Patronelli", category: "deporte_general" },
+  { name: "David Nalbandian", category: "deporte_general" },
+  { name: "Sebastian Crismanich", category: "deporte_general" },
+  { name: "Luis Scola", category: "deporte_general" },
+  { name: "Brian Toledo", category: "deporte_general" },
+
+  // streaming_internet 25
+  { name: "Coscu", category: "streaming_internet" },
+  { name: "Momo", category: "streaming_internet" },
+  { name: "Spreen", category: "streaming_internet" },
+  { name: "Davoo Xeneize", category: "streaming_internet" },
+  { name: "La Cobra", category: "streaming_internet" },
+  { name: "Luquita Rodriguez", category: "streaming_internet" },
+  { name: "Migue Granados", category: "streaming_internet" },
+  { name: "Nati Jota", category: "streaming_internet" },
+  { name: "Nico Occhiato", category: "streaming_internet" },
+  { name: "Grego Rossello", category: "streaming_internet" },
+  { name: "Martin Cirio", category: "streaming_internet" },
+  { name: "Santi Maratea", category: "streaming_internet" },
+  { name: "Pablo Agustin", category: "streaming_internet" },
+  { name: "Papo MC", category: "streaming_internet" },
+  { name: "Lit Killah", category: "streaming_internet" },
+  { name: "FMK", category: "streaming_internet" },
+  { name: "Rober Galati", category: "streaming_internet" },
+  { name: "Nachito Saralegui", category: "streaming_internet" },
+  { name: "Julian Serrano", category: "streaming_internet" },
+  { name: "Lucas Upstein", category: "streaming_internet" },
+  { name: "Robleis", category: "streaming_internet" },
+  { name: "Brunenger", category: "streaming_internet" },
+  { name: "Ibai", category: "streaming_internet" },
+  { name: "Auronplay", category: "streaming_internet" },
+  { name: "TheGrefg", category: "streaming_internet" },
+
+  // politica_actualidad 25
+  { name: "Javier Milei", category: "politica_actualidad" },
+  { name: "Cristina Fernandez de Kirchner", category: "politica_actualidad" },
+  { name: "Mauricio Macri", category: "politica_actualidad" },
+  { name: "Alberto Fernandez", category: "politica_actualidad" },
+  { name: "Sergio Massa", category: "politica_actualidad" },
+  { name: "Patricia Bullrich", category: "politica_actualidad" },
+  { name: "Horacio Rodriguez Larreta", category: "politica_actualidad" },
+  { name: "Axel Kicillof", category: "politica_actualidad" },
+  { name: "Guillermo Moreno", category: "politica_actualidad" },
+  { name: "Myriam Bregman", category: "politica_actualidad" },
+  { name: "Jose Luis Espert", category: "politica_actualidad" },
+  { name: "Victoria Villarruel", category: "politica_actualidad" },
+  { name: "Elisa Carrio", category: "politica_actualidad" },
+  { name: "Juan Grabois", category: "politica_actualidad" },
+  { name: "Martin Lousteau", category: "politica_actualidad" },
+  { name: "Leandro Santoro", category: "politica_actualidad" },
+  { name: "Juan Schiaretti", category: "politica_actualidad" },
+  { name: "Maximo Kirchner", category: "politica_actualidad" },
+  { name: "Wado de Pedro", category: "politica_actualidad" },
+  { name: "Anibal Fernandez", category: "politica_actualidad" },
+  { name: "Ofelia Fernandez", category: "politica_actualidad" },
+  { name: "Miguel Angel Pichetto", category: "politica_actualidad" },
+  { name: "Gabriel Boric", category: "politica_actualidad" },
+  { name: "Lula da Silva", category: "politica_actualidad" },
+  { name: "Donald Trump", category: "politica_actualidad" },
+
+  // memes_virales 25
+  { name: "Ricardo Fort", category: "memes_virales" },
+  { name: "Tano Pasman", category: "memes_virales" },
+  { name: "Zulma Lobato", category: "memes_virales" },
+  { name: "Marta Minujin", category: "memes_virales" },
+  { name: "Anabela Ascar", category: "memes_virales" },
+  { name: "Tito Speranza", category: "memes_virales" },
+  { name: "Amalia Granata", category: "memes_virales" },
+  { name: "Silvia Suller", category: "memes_virales" },
+  { name: "Jacobo Winograd", category: "memes_virales" },
+  { name: "El Bananero", category: "memes_virales" },
+  { name: "Yayo Guridi", category: "memes_virales" },
+  { name: "Pachu Peña", category: "memes_virales" },
+  { name: "Pablo Granados", category: "memes_virales" },
+  { name: "Miguel del Sel", category: "memes_virales" },
+  { name: "El Dipy", category: "memes_virales" },
+  { name: "La Bomba Tucumana", category: "memes_virales" },
+  { name: "Alfredo Casero", category: "memes_virales" },
+  { name: "Fabio Alberti", category: "memes_virales" },
+  { name: "Diego Capusotto", category: "memes_virales" },
+  { name: "Caruso Lombardi", category: "memes_virales" },
+  { name: "Guillote Coppola", category: "memes_virales" },
+  { name: "Gino Renni", category: "memes_virales" },
+  { name: "Marixa Balli", category: "memes_virales" },
+  { name: "Matias Ale", category: "memes_virales" },
+  { name: "Virginia Gallardo", category: "memes_virales" },
+
+  // ficcion_arg_pop 25
+  { name: "Pepe Argento", category: "ficcion_arg_pop" },
+  { name: "Moni Argento", category: "ficcion_arg_pop" },
+  { name: "Coqui Argento", category: "ficcion_arg_pop" },
+  { name: "Paola Argento", category: "ficcion_arg_pop" },
+  { name: "Maria Elena Fuseneco", category: "ficcion_arg_pop" },
+  { name: "Dardo Fuseneco", category: "ficcion_arg_pop" },
+  { name: "Mama Cora", category: "ficcion_arg_pop" },
+  { name: "Bombita Rodriguez", category: "ficcion_arg_pop" },
+  { name: "Violencia Rivas", category: "ficcion_arg_pop" },
+  { name: "Micky Vainilla", category: "ficcion_arg_pop" },
+  { name: "Mafalda", category: "ficcion_arg_pop" },
+  { name: "Manolito", category: "ficcion_arg_pop" },
+  { name: "Susanita", category: "ficcion_arg_pop" },
+  { name: "Felipe", category: "ficcion_arg_pop" },
+  { name: "Guille", category: "ficcion_arg_pop" },
+  { name: "Clemente", category: "ficcion_arg_pop" },
+  { name: "Patoruzu", category: "ficcion_arg_pop" },
+  { name: "Isidoro Cañones", category: "ficcion_arg_pop" },
+  { name: "Hijitus", category: "ficcion_arg_pop" },
+  { name: "Larguirucho", category: "ficcion_arg_pop" },
+  { name: "Anteojito", category: "ficcion_arg_pop" },
+  { name: "Patito Feo", category: "ficcion_arg_pop" },
+  { name: "Violetta", category: "ficcion_arg_pop" },
+  { name: "Floricienta", category: "ficcion_arg_pop" },
+  { name: "Chiquititas", category: "ficcion_arg_pop" }
+];
+
+const CATEGORY_LABELS = {
+  all: "Todas",
+  tv_farandula: "TV y farandula",
+  musica: "Musica",
+  futbol: "Futbol",
+  deporte_general: "Deporte",
+  streaming_internet: "Streaming e internet",
+  politica_actualidad: "Politica y actualidad",
+  memes_virales: "Memes y virales",
+  ficcion_arg_pop: "Ficcion y cultura pop"
+};
+
+function buildPool() {
+  const pool = [];
+  let id = 1;
+
+  for (const base of BASE_CHARACTERS) {
+    const variants = VARIANTS_BY_CATEGORY[base.category];
+
+    for (const variant of variants) {
+      pool.push({
+        id,
+        baseName: base.name,
+        category: base.category,
+        categoryLabel: CATEGORY_LABELS[base.category],
+        displayName: `${base.name} - ${variant}`
+      });
+      id++;
+    }
   }
-  return arr;
-}
 
-function populateCategories() {
-  Object.entries(CATEGORIES)
-    .filter(([key]) => key !== "all")
-    .forEach(([key, label]) => {
-      const opt = document.createElement("option");
-      opt.value = key;
-      opt.textContent = label;
-      categorySelect.appendChild(opt);
-    });
-}
-
-function getFilteredPool() {
-  const selected = categorySelect.value;
-  if (selected === "all") return CHARACTER_POOL;
-  return CHARACTER_POOL.filter(item => item.category === selected);
-}
-
-function refillPool() {
-  currentPool = shuffle(
-    getFilteredPool().filter(item => !usedIds.has(item.id))
-  );
-}
-
-function updateStats() {
-  const fullPool = getFilteredPool();
-  totalCountEl.textContent = `Total: ${fullPool.length}`;
-  remainingCountEl.textContent = `Restantes: ${currentPool.length}`;
-  currentCategoryEl.textContent = `Categoria: ${CATEGORIES[categorySelect.value] || "Todas"}`;
-}
-
-function renderEmpty(message = "Todavia no salio nadie") {
-  board.innerHTML = `
-    <div>
-      <div class="char-meta">${message}</div>
-    </div>
-  `;
-}
-
-function renderCharacter(character, hidden = false) {
-  board.innerHTML = `
-    <div class="${hidden ? "hidden-card" : ""}">
-      <div class="char-name">${character.displayName}</div>
-      <div class="char-meta">${character.categoryLabel}</div>
-      <div class="hint">Base: ${character.baseName}</div>
-    </div>
-  `;
-}
-
-function setWaiting(message) {
-  statusEl.textContent = message;
-}
-
-async function countdown(seconds) {
-  for (let i = seconds; i >= 1; i--) {
-    board.innerHTML = `<div class="countdown">${i}</div>`;
-    statusEl.textContent = `Mostrando en ${i}...`;
-    await new Promise(resolve => setTimeout(resolve, 1000));
-  }
-}
-
-function drawCharacter() {
-  if (!currentPool.length) {
-    refillPool();
+  if (pool.length !== 1000) {
+    throw new Error(`La base no tiene 1000 exactos. Tiene ${pool.length}.`);
   }
 
-  if (!currentPool.length) {
-    renderEmpty("No quedaron personajes en esta categoria");
-    setWaiting("No quedaron personajes");
-    return null;
-  }
-
-  const next = currentPool.shift();
-  usedIds.add(next.id);
-  history.unshift(next.displayName);
-  history = history.slice(0, 20);
-
-  currentCharacter = next;
-  currentHidden = false;
-  updateStats();
-  return next;
+  return pool;
 }
 
-async function startGame() {
-  const value = triggerInput.value.trim().toLowerCase();
-
-  if (value !== "ok") {
-    setWaiting('Escribi "ok" primero');
-    return;
-  }
-
-  playBtn.disabled = true;
-  revealBtn.disabled = true;
-  nextBtn.disabled = true;
-  copyBtn.disabled = true;
-
-  await countdown(3);
-
-  const selected = drawCharacter();
-  if (!selected) {
-    playBtn.disabled = false;
-    return;
-  }
-
-  renderCharacter(selected, false);
-  setWaiting("Listo");
-  revealBtn.disabled = false;
-  nextBtn.disabled = false;
-  copyBtn.disabled = false;
-  playBtn.disabled = false;
-}
-
-function resetGame() {
-  usedIds = new Set();
-  history = [];
-  currentCharacter = null;
-  currentHidden = false;
-  refillPool();
-  updateStats();
-  renderEmpty();
-  setWaiting("Reset hecho");
-  revealBtn.disabled = true;
-  nextBtn.disabled = true;
-  copyBtn.disabled = true;
-}
-
-function revealToggle() {
-  if (!currentCharacter) return;
-  currentHidden = !currentHidden;
-  renderCharacter(currentCharacter, currentHidden);
-  setWaiting(currentHidden ? "Oculto" : "Visible");
-}
-
-async function nextCharacter() {
-  if (!currentCharacter) return;
-  playBtn.disabled = true;
-  revealBtn.disabled = true;
-  nextBtn.disabled = true;
-  copyBtn.disabled = true;
-
-  await countdown(3);
-
-  const selected = drawCharacter();
-  if (!selected) {
-    playBtn.disabled = false;
-    return;
-  }
-
-  renderCharacter(selected, false);
-  setWaiting("Nuevo personaje");
-  revealBtn.disabled = false;
-  nextBtn.disabled = false;
-  copyBtn.disabled = false;
-  playBtn.disabled = false;
-}
-
-async function copyCurrent() {
-  if (!currentCharacter) return;
-  await navigator.clipboard.writeText(currentCharacter.displayName);
-  setWaiting("Copiado al portapapeles");
-}
-
-function showHistory() {
-  if (!history.length) {
-    alert("Todavia no salio nadie");
-    return;
-  }
-  alert(history.join("\n"));
-}
-
-playBtn.addEventListener("click", startGame);
-resetBtn.addEventListener("click", resetGame);
-revealBtn.addEventListener("click", revealToggle);
-nextBtn.addEventListener("click", nextCharacter);
-copyBtn.addEventListener("click", copyCurrent);
-historyBtn.addEventListener("click", showHistory);
-
-categorySelect.addEventListener("change", () => {
-  currentCharacter = null;
-  currentHidden = false;
-  usedIds = new Set();
-  refillPool();
-  updateStats();
-  renderEmpty("Categoria cambiada");
-  setWaiting("Categoria actualizada");
-  revealBtn.disabled = true;
-  nextBtn.disabled = true;
-  copyBtn.disabled = true;
-});
-
-triggerInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    startGame();
-  }
-});
-
-populateCategories();
-refillPool();
-updateStats();
-renderEmpty();
-setWaiting("Esperando...");
+export const CHARACTER_POOL = buildPool();
+export const CATEGORIES = CATEGORY_LABELS;
