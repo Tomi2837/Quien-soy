@@ -549,6 +549,32 @@ dialog::backdrop{background:rgba(30,27,24,.6);backdrop-filter:blur(3px)}
 .estado-entregado{--c-estado:#8A8178;--c-estado-suave:#E6E1DA}
 .gestion-vacia{border:1.5px dashed #4A423B;border-radius:14px;padding:28px;text-align:center;color:#CFC4B4}
 
+/* =========================================================
+   12. PRESENTACIÓN DE LA AGENCIA (mensaje inicial de la demo)
+   ========================================================= */
+#intro-agencia{max-width:min(640px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
+.intro-cab{background:var(--carbon);color:var(--crema);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:1}
+.intro-cab strong{font-family:var(--f-display);font-size:1.25rem;letter-spacing:.01em}
+.intro-cab span{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mostaza)}
+.intro-cuerpo{padding:24px;display:grid;gap:14px;text-align:left}
+.intro-cuerpo h2{font-size:clamp(1.6rem,5vw,2.1rem);margin:0}
+.intro-cuerpo h2:focus{outline:none}
+.intro-cuerpo p{margin:0;color:var(--tinta)}
+.intro-demo{background:var(--hueso);border:1px solid var(--borde);border-radius:14px;padding:16px;display:grid;gap:10px}
+.intro-demo h3{font-size:1.05rem;margin:0}
+.intro-demo ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.intro-demo li a{display:flex;gap:10px;align-items:baseline;text-decoration:none;padding:6px 8px;border-radius:8px}
+.intro-demo li a:hover{background:var(--crema)}
+.intro-demo li b{font-family:var(--f-mono);font-size:.75rem;color:var(--roble-osc);flex:none}
+.intro-demo small{color:var(--tinta-suave);font-size:.82rem}
+.intro-firma{font-size:.92rem;color:var(--tinta-suave)}
+.intro-firma strong{color:var(--carbon)}
+.intro-cuerpo .acciones{margin-top:4px}
+.etiqueta-demo{position:fixed;left:calc(16px + env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:89;background:var(--carbon);color:var(--crema);border:1px solid #4A423B;border-radius:999px;padding:10px 16px;font-family:var(--f-mono);font-size:.74rem;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.etiqueta-demo b{color:var(--mostaza);font-weight:600}
+.etiqueta-demo:hover{background:var(--carbon-2)}
+@media (max-width:520px){.toast{bottom:calc(76px + env(safe-area-inset-bottom,0px))}}
+
 /* Zona de impresión (solo visible al imprimir la lista de cortes) */
 #zona-impresion{display:none}
 @media print{
@@ -968,6 +994,13 @@ dialog::backdrop{background:rgba(30,27,24,.6);backdrop-filter:blur(3px)}
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg>
 </a>
 
+<!-- Presentación de la agencia: se abre al cargar la demo -->
+<dialog id="intro-agencia" aria-labelledby="intro-titulo">
+  <div class="intro-cab"><div><strong data-agencia="nombre">NALTA Digital</strong><br><span>Demo para <span data-dato="NOMBRE_NEGOCIO">Firme Carpintería</span></span></div><button type="button" class="btn btn-primario btn-chico" id="intro-cerrar">Ver la demo</button></div>
+  <div class="intro-cuerpo" id="intro-cuerpo"></div>
+</dialog>
+<button type="button" class="etiqueta-demo" id="etiqueta-demo" aria-haspopup="dialog">Demo · <b data-agencia="nombre">NALTA Digital</b></button>
+
 <!-- Aviso al agregar al pedido -->
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-texto"></span><a href="#pedido">Ver pedido</a></div>
 
@@ -1025,6 +1058,31 @@ const HERO_DATOS = [                              // Destacados debajo del hero 
   ["9", "ambientes y rubros"],
   ["3D", "diseñá y cotizá online"],
 ];
+
+/* =====================================================================
+   ██  1b. PRESENTACIÓN DE LA AGENCIA (mensaje que aparece al abrir la demo)
+   ===================================================================== */
+const AGENCIA = {
+  nombre: "NALTA Digital",
+  firma: "Martina",
+  // Párrafos del mensaje inicial (se muestran en orden)
+  mensaje: [
+    "Hola, ¿cómo estás? Mi nombre es Martina y me comunico desde la agencia NALTA Digital.",
+    "Estuvimos viendo tu página y tus redes, y encontramos algunos puntos que podrían mejorarse para que se vea más moderna y profesional, cargue mejor y ayude a generar más consultas o ventas.",
+    "Nos dedicamos al diseño, desarrollo y optimización de sitios web. También ofrecemos gestión de redes sociales, creación de contenido y planificación mensual, para que la comunicación de la marca mantenga una imagen profesional y coherente en todos sus canales.",
+    "Podemos prepararte una propuesta concreta con las mejoras que consideramos más importantes, sin compromiso.",
+  ],
+  demoTitulo: "Qué es esta demo",
+  demoTexto: "Es una demo visual que armamos con tus propios trabajos de Instagram, para que veas el enfoque aplicado a tu marca. Recorrela como si fueras un cliente:",
+  demoNota: "Es una maqueta: los datos de contacto, los precios y los testimonios son de ejemplo y se completan con la información real.",
+  funciones: [
+    ["#modelos", "Catálogo de modelos", "25 trabajos tuyos ordenados por ambiente, cada uno con su botón de pedido."],
+    ["#configurador", "Diseñador 3D", "el cliente define medidas, columnas, cajones y material, y ve el mueble y un precio estimado al instante."],
+    ["#pedido", "Pedido por WhatsApp", "junta varios muebles y te llega el pedido armado, con medidas y lista de cortes."],
+    ["#gestion", "Gestión de pedidos", "un panel para seguir cada pedido: nuevo, presupuestado, seña, producción y entrega."],
+  ],
+  cierre: "Si te interesa, podemos enviarte más ideas aplicadas directamente a tu página y redes.",
+};
 
 /* =====================================================================
    ██  2. PRECIOS (en pesos argentinos) — ACTUALIZALOS SEGÚN TUS COSTOS
@@ -2529,6 +2587,35 @@ function mostrarConfirmacion(via, urlWA, urlMail, nombre, numero) {
 }
 
 /* =====================================================================
+   ██  15c. PRESENTACIÓN DE LA AGENCIA
+   ===================================================================== */
+function iniciarIntroAgencia() {
+  const dlg = $("#intro-agencia");
+  $$("[data-agencia='nombre']").forEach((el) => (el.textContent = AGENCIA.nombre));
+  $("#intro-cuerpo").innerHTML = `
+    <h2 id="intro-titulo" tabindex="-1">Una propuesta para ${esc(NOMBRE_NEGOCIO)}</h2>
+    ${AGENCIA.mensaje.map((t) => `<p>${esc(t)}</p>`).join("")}
+    <div class="intro-demo">
+      <h3>${esc(AGENCIA.demoTitulo)}</h3>
+      <small>${esc(AGENCIA.demoTexto)}</small>
+      <ul>${AGENCIA.funciones.map(([href, t, d], i) =>
+        `<li><a href="${href}" data-ir><b>0${i + 1}</b><span><strong>${esc(t)}</strong>: ${esc(d)}</span></a></li>`).join("")}</ul>
+      <small>${esc(AGENCIA.demoNota)}</small>
+    </div>
+    <p>${esc(AGENCIA.cierre)}</p>
+    <p class="intro-firma"><strong>${esc(AGENCIA.firma)}</strong> · ${esc(AGENCIA.nombre)}</p>
+    <div class="acciones"><button type="button" class="btn btn-primario" id="intro-ver">Ver la demo</button></div>`;
+  const abrir = () => { if (typeof dlg.showModal === "function") { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", ""); dlg.scrollTop = 0; $("#intro-titulo").focus(); };
+  const cerrar = () => (dlg.close ? dlg.close() : dlg.removeAttribute("open"));
+  $("#intro-ver").addEventListener("click", cerrar);
+  $("#intro-cerrar").addEventListener("click", cerrar);
+  $$("[data-ir]", dlg).forEach((a) => a.addEventListener("click", cerrar));   // cierra y deja que el ancla haga scroll
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) cerrar(); }); // clic fuera de la tarjeta
+  $("#etiqueta-demo").addEventListener("click", abrir);
+  abrir();
+}
+
+/* =====================================================================
    ██  16. ARRANQUE
    ===================================================================== */
 rellenarTextos();
@@ -2546,6 +2633,7 @@ iniciarItemsPedido();
 iniciarPedido();
 iniciarGestion();
 revelarAlScroll();
+iniciarIntroAgencia();
 </script>
 </body>
 </html>
