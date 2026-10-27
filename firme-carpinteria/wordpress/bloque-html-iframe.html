@@ -1,0 +1,18 @@
+<!--
+  DEMO EN WORDPRESS — pegar en un bloque "HTML personalizado" (no en el editor de texto).
+  1) Subí el archivo firme-carpinteria-demo-nalta.html al servidor por el Administrador de archivos
+     del hosting o por FTP, por ejemplo en:  public_html/demos/firme-carpinteria/index.html
+     Queda en:  https://nalta.com.ar/demos/firme-carpinteria/
+  2) Si la URL de abajo es distinta, cambiala en src="...".
+  La demo se muestra a pantalla completa, por encima del encabezado del tema, la barra de
+  WordPress y los botones flotantes del sitio.
+-->
+<div class="nalta-demo-full">
+  <iframe src="/demos/firme-carpinteria/" title="Demo Firme Carpintería — NALTA Digital"
+          allow="fullscreen" allowfullscreen loading="eager"></iframe>
+</div>
+<style>
+  .nalta-demo-full{position:fixed;inset:0;z-index:2147483647;background:#F6F0E5}
+  .nalta-demo-full iframe{display:block;width:100%;height:100%;border:0}
+  html,body{overflow:hidden!important}
+</style>
