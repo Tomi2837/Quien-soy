@@ -587,24 +587,55 @@ dialog::backdrop{background:rgba(30,27,24,.6);backdrop-filter:blur(3px)}
 /* =========================================================
    12. PRESENTACIÓN DE LA AGENCIA (mensaje inicial de la demo)
    ========================================================= */
-#intro-agencia{max-width:min(640px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
-.intro-cab{background:var(--carbon);color:var(--crema);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:1}
-.intro-cab strong{font-family:var(--f-display);font-size:1.25rem;letter-spacing:.01em}
-.intro-cab span{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mostaza)}
-.intro-cuerpo{padding:24px;display:grid;gap:14px;text-align:left}
-.intro-cuerpo h2{font-size:clamp(1.6rem,5vw,2.1rem);margin:0}
-.intro-cuerpo h2:focus{outline:none}
-.intro-cuerpo p{margin:0;color:var(--tinta)}
-.intro-demo{background:var(--hueso);border:1px solid var(--borde);border-radius:14px;padding:16px;display:grid;gap:10px}
-.intro-demo h3{font-size:1.05rem;margin:0}
-.intro-demo ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.intro-demo li a{display:flex;gap:10px;align-items:baseline;text-decoration:none;padding:6px 8px;border-radius:8px}
-.intro-demo li a:hover{background:var(--crema)}
-.intro-demo li b{font-family:var(--f-mono);font-size:.75rem;color:var(--roble-osc);flex:none}
-.intro-demo small{color:var(--tinta-suave);font-size:.82rem}
-.intro-firma{font-size:.92rem;color:var(--tinta-suave)}
+#intro-agencia{width:min(1080px,calc(100vw - 24px));max-width:none;max-height:calc(100dvh - 24px);overflow:auto;overscroll-behavior:contain}
+@media (max-width:640px){#intro-agencia{width:100vw;max-height:100dvh;height:100dvh;border-radius:0}}
+.intro-cab{background:var(--carbon);color:var(--crema);padding:14px clamp(16px,4vw,32px);display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;z-index:2;border-bottom:1px solid #3B342E}
+.intro-cab strong{font-family:var(--f-display);font-size:1.15rem}
+.intro-cab span{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mostaza)}
+.intro-cuerpo{display:grid;text-align:left}
+.intro-bloque{padding:clamp(22px,4vw,40px) clamp(16px,4vw,40px);display:grid;gap:16px}
+.intro-bloque + .intro-bloque{border-top:1px solid var(--borde)}
+.intro-bloque h3{font-size:clamp(1.3rem,3.4vw,1.75rem);margin:0}
+.intro-bloque > p{margin:0;max-width:68ch;color:var(--tinta)}
+.intro-portada{background:var(--carbon);color:var(--crema);display:grid;gap:20px}
+@media (min-width:860px){.intro-portada{grid-template-columns:1.25fr .75fr;align-items:center}}
+.intro-portada h2{color:var(--crema);font-size:clamp(1.9rem,5vw,3rem);margin:0;text-wrap:balance}
+.intro-portada h2 em{color:var(--mostaza);font-style:italic}
+.intro-portada h2:focus{outline:none}
+.intro-portada p{color:#DCD2C3;margin:0;max-width:60ch}
+.intro-portada .eyebrow{color:var(--mostaza);margin:0}
+.intro-fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.intro-fotos img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:12px;max-width:100%}
+.intro-fotos img:nth-child(2){transform:translateY(-14px)}
+.comparacion{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.comparacion > div{border-radius:14px;padding:18px;display:grid;gap:10px;align-content:start}
+.comparacion h4{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;margin:0}
+.comparacion ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:.95rem}
+.comparacion li{display:flex;gap:10px;align-items:baseline}
+.comparacion li::before{font-family:var(--f-mono);font-weight:700;flex:none}
+.hoy{background:var(--hueso);border:1px solid var(--borde)}
+.hoy h4{color:var(--tinta-suave)}
+.hoy li{color:var(--tinta-suave)}
+.hoy li::before{content:"—"}
+.con-web{background:#FDF3DC;border:1.5px solid var(--mostaza)}
+.con-web h4{color:#6B4A07}
+.con-web li::before{content:"✓";color:var(--exito)}
+.intro-accesos{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.intro-accesos a{display:grid;gap:4px;text-decoration:none;background:var(--blanco);border:1px solid var(--borde);border-radius:14px;padding:16px;transition:border-color .2s, transform .2s}
+.intro-accesos a:hover{border-color:var(--carbon);transform:translateY(-2px)}
+.intro-accesos b{font-family:var(--f-display);font-size:1.05rem;color:var(--carbon)}
+.intro-accesos span{font-size:.86rem;color:var(--tinta-suave)}
+.intro-accesos i{font-style:normal;font-family:var(--f-mono);font-size:.74rem;color:var(--roble-osc);margin-top:4px}
+.plan{list-style:none;margin:0;padding:0;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));counter-reset:paso}
+.plan li{counter-increment:paso;background:var(--blanco);border:1px solid var(--borde);border-radius:14px;padding:16px 16px 16px 58px;position:relative}
+.plan li::before{content:counter(paso);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:50%;background:var(--carbon);color:var(--mostaza);font-family:var(--f-mono);font-weight:600;display:grid;place-items:center;font-size:.85rem}
+.plan strong{display:block;color:var(--carbon);margin-bottom:2px}
+.plan span{font-size:.9rem;color:var(--tinta-suave)}
+.intro-nota{font-family:var(--f-mono);font-size:.76rem;color:var(--tinta-suave);background:var(--hueso);border-radius:10px;padding:10px 12px}
+.intro-cierre{background:var(--hueso)}
+#intro-plan{scroll-margin-top:64px}
+.intro-firma{font-size:.95rem;color:var(--tinta-suave);margin:0}
 .intro-firma strong{color:var(--carbon)}
-.intro-cuerpo .acciones{margin-top:4px}
 /* Modo preview para la app de la agencia: encabezado que se oculta al bajar + pantalla completa */
 html.sin-header{--top-fijo:0px}
 .header{transition:border-color .3s, box-shadow .3s, transform .35s ease}
@@ -673,7 +704,7 @@ html.sin-header .header{transform:translateY(-100%);box-shadow:none}
       <div class="hero-botones">
         <a class="btn btn-primario" href="#estudio">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V5h14v16M9 9h6M9 13h6M12 13v8"/></svg>
-          Diseñar mi mueble
+          Cotizar mi mueble
         </a>
         <a class="btn btn-borde" href="#modelos">Ver modelos</a>
       </div>
@@ -1039,7 +1070,7 @@ html.sin-header .header{transform:translateY(-100%);box-shadow:none}
 
 <!-- Presentación de la agencia: se abre al cargar la demo -->
 <dialog id="intro-agencia" aria-labelledby="intro-titulo">
-  <div class="intro-cab"><div><strong data-agencia="nombre">NALTA Digital</strong><br><span>Demo para <span data-dato="NOMBRE_NEGOCIO">Firme Carpintería</span></span></div><button type="button" class="btn btn-primario btn-chico" id="intro-cerrar">Ver la demo</button></div>
+  <div class="intro-cab"><div><strong data-agencia="nombre">NALTA Digital</strong><br><span>Propuesta para <span data-dato="NOMBRE_NEGOCIO">Firme Carpintería</span></span></div><button type="button" class="btn btn-primario btn-chico" id="intro-cerrar">Probar la demo</button></div>
   <div class="intro-cuerpo" id="intro-cuerpo"></div>
 </dialog>
 <div class="barra-demo">
@@ -1099,13 +1130,13 @@ const HORARIOS = [
 ];
 
 // Textos principales
-const HERO_ETIQUETA  = "Firme Carpintería · Taller propio";
-const HERO_TITULO    = "Muebles firmes, <em>hechos a tu medida</em>";
-const HERO_SUBTITULO = "Cocinas, bibliotecas, muebles de TV, dormitorio, baño y locales. Elegí un modelo de nuestro catálogo o diseñá el tuyo en 3D y armá tu pedido en minutos.";
-const HERO_DATOS = [                              // Destacados debajo del hero (reemplazá por cifras reales si las hay)
-  ["Taller", "propio, fabricamos todo"],
-  ["9", "ambientes y rubros"],
-  ["3D", "diseñá y cotizá online"],
+const HERO_ETIQUETA  = "Cotizador online · Firme Carpintería";
+const HERO_TITULO    = "Cotizá tu mueble a medida <em>en minutos</em>";
+const HERO_SUBTITULO = "Elegí uno de nuestros modelos o diseñalo en 3D con tus medidas. Ves el precio estimado al instante y nos mandás el pedido armado por WhatsApp, sin vueltas.";
+const HERO_DATOS = [                              // Los 3 pasos para cotizar (debajo del título)
+  ["1", "Elegí un modelo o diseñalo"],
+  ["2", "Mirá el precio estimado"],
+  ["3", "Mandá tu pedido"],
 ];
 
 /* =====================================================================
@@ -1114,23 +1145,41 @@ const HERO_DATOS = [                              // Destacados debajo del hero 
 const AGENCIA = {
   nombre: "NALTA Digital",
   firma: "Martina",
-  // Párrafos del mensaje inicial (se muestran en orden)
-  mensaje: [
-    "Hola, ¿cómo estás? Mi nombre es Martina y me comunico desde la agencia NALTA Digital.",
-    "Estuvimos viendo tu página y tus redes, y encontramos algunos puntos que podrían mejorarse para que se vea más moderna y profesional, cargue mejor y ayude a generar más consultas o ventas.",
-    "Nos dedicamos al diseño, desarrollo y optimización de sitios web. También ofrecemos gestión de redes sociales, creación de contenido y planificación mensual, para que la comunicación de la marca mantenga una imagen profesional y coherente en todos sus canales.",
-    "Podemos prepararte una propuesta concreta con las mejoras que consideramos más importantes, sin compromiso.",
+  eyebrow: "Web · cotizador 3D · gestión de pedidos",
+  titulo: "Que tus clientes <em>se coticen solos</em> y cada pedido llegue ordenado",
+  saludo: "Hola, ¿cómo estás? Soy Martina, de NALTA Digital. Vimos tus trabajos en Instagram: un catálogo enorme y con muy buena terminación. Armamos esta demo con tus propios muebles para mostrarte cómo una web puede ordenar y profesionalizar tus pedidos.",
+  fotos: ["biblioteca-led", "panel-tv-listones", "mesa-luz-cajones"],   // ids de MODELOS
+  hoyTitulo: "Hoy",
+  hoy: [
+    "Llegan consultas sueltas por DM: “¿precio?”, sin medidas ni fotos.",
+    "Hay que ir y venir varias veces para entender qué quiere cada cliente.",
+    "Presupuestos, señas y fechas quedan repartidos en chats y anotaciones.",
+    "Muchos preguntan el precio y no vuelven.",
   ],
-  demoTitulo: "Qué es esta demo",
-  demoTexto: "Es una demo visual que armamos con tus propios trabajos de Instagram, para que veas el enfoque aplicado a tu marca. Recorrela como si fueras un cliente:",
-  demoNota: "Es una maqueta: los datos de contacto, los precios y los testimonios son de ejemplo y se completan con la información real.",
+  conWebTitulo: "Con tu web",
+  conWeb: [
+    "El cliente elige un modelo o lo diseña en 3D y ve un precio estimado.",
+    "El pedido te llega por WhatsApp con medidas, material y lista de cortes.",
+    "Cada pedido tiene su estado: presupuestado, seña, producción y entrega.",
+    "Quien te escribe ya conoce el rango de precio: la charla arranca más adelante.",
+  ],
   funciones: [
-    ["#modelos", "Catálogo de modelos", "25 trabajos tuyos ordenados por ambiente, cada uno con su botón de pedido."],
-    ["#estudio", "Diseñador 3D", "el cliente define medidas, columnas, cajones y material, y ve el mueble y un precio estimado al instante."],
-    ["#pedido", "Pedido por WhatsApp", "junta varios muebles y te llega el pedido armado, con medidas y lista de cortes."],
-    ["#gestion", "Gestión de pedidos", "un panel para seguir cada pedido: nuevo, presupuestado, seña, producción y entrega."],
+    ["#estudio", "Diseñador 3D", "Medidas, columnas, cajones y material, con precio estimado al instante."],
+    ["#modelos", "Catálogo de modelos", "25 trabajos tuyos por ambiente, cada uno con su botón de pedido."],
+    ["#pedido", "Pedido por WhatsApp", "Varios muebles en un solo pedido, con todos los datos para cotizar."],
+    ["#gestion", "Gestión de pedidos", "Tu panel para seguir cada pedido de punta a punta."],
   ],
-  cierre: "Si te interesa, podemos enviarte más ideas aplicadas directamente a tu página y redes.",
+  planTitulo: "Cómo la hacemos rendir",
+  plan: [
+    ["Lanzamiento en Instagram", "Link en la bio y una historia destacada “Cotizá tu mueble”, con un reel que muestra cómo se diseña un mueble en 3D en un minuto."],
+    ["Cada post, un pedido", "Cada trabajo que publicás tiene su ficha en la web. El texto del post invita: “Pedí este modelo a tu medida” con el link directo."],
+    ["Respuestas que cotizan", "Al “¿precio?” de DM y WhatsApp se responde con el link al cotizador: el cliente se arma su mueble y vuelve con el pedido completo."],
+    ["Contenido todos los meses", "Planificamos posts y reels: procesos del taller, antes y después, y “diseñalo vos” con distintos ambientes."],
+    ["Seguimiento con el panel", "Ves a quién responder hoy, quién tiene la seña pendiente y qué se entrega esta semana."],
+    ["Medir y ajustar", "Revisamos qué modelos se cotizan y se piden más, y ajustamos precios, catálogo y contenido."],
+  ],
+  nota: "Esto es una demo: el WhatsApp, los precios y los testimonios son de ejemplo. Los reemplazamos por tus datos reales y tu lista de precios.",
+  cierre: "En NALTA hacemos diseño y desarrollo web, gestión de redes y contenido: armamos la herramienta y también la hacemos conocer. Te preparamos una propuesta concreta para ponerla en marcha, sin compromiso.",
 };
 
 /* =====================================================================
@@ -2641,24 +2690,48 @@ function mostrarConfirmacion(via, urlWA, urlMail, nombre, numero) {
 function iniciarIntroAgencia() {
   const dlg = $("#intro-agencia");
   $$("[data-agencia='nombre']").forEach((el) => (el.textContent = AGENCIA.nombre));
+  const foto = (id) => { const m = MODELOS.find((x) => x.id === id); return m ? `<img src="${esc(m.imagen)}" alt="${esc(m.nombre)}">` : ""; };
   $("#intro-cuerpo").innerHTML = `
-    <h2 id="intro-titulo" tabindex="-1">Una propuesta para ${esc(NOMBRE_NEGOCIO)}</h2>
-    ${AGENCIA.mensaje.map((t) => `<p>${esc(t)}</p>`).join("")}
-    <div class="intro-demo">
-      <h3>${esc(AGENCIA.demoTitulo)}</h3>
-      <small>${esc(AGENCIA.demoTexto)}</small>
-      <ul>${AGENCIA.funciones.map(([href, t, d], i) =>
-        `<li><a href="${href}" data-ir><b>0${i + 1}</b><span><strong>${esc(t)}</strong>: ${esc(d)}</span></a></li>`).join("")}</ul>
-      <small>${esc(AGENCIA.demoNota)}</small>
+    <div class="intro-bloque intro-portada">
+      <div style="display:grid;gap:14px">
+        <p class="eyebrow">${esc(AGENCIA.eyebrow)}</p>
+        <h2 id="intro-titulo" tabindex="-1">${AGENCIA.titulo}</h2>
+        <p>${esc(AGENCIA.saludo)}</p>
+        <div class="acciones" style="margin:0"><button type="button" class="btn btn-primario" data-entrar>Probar la demo</button><a class="btn btn-borde" style="color:var(--crema);border-color:#6A6058" href="#intro-plan" data-interno>Ver la estrategia</a></div>
+      </div>
+      <div class="intro-fotos" aria-hidden="true">${AGENCIA.fotos.map(foto).join("")}</div>
     </div>
-    <p>${esc(AGENCIA.cierre)}</p>
-    <p class="intro-firma"><strong>${esc(AGENCIA.firma)}</strong> · ${esc(AGENCIA.nombre)}</p>
-    <div class="acciones"><button type="button" class="btn btn-primario" id="intro-ver">Ver la demo</button></div>`;
+    <div class="intro-bloque">
+      <h3>Del “¿precio?” al pedido completo</h3>
+      <div class="comparacion">
+        <div class="hoy"><h4>${esc(AGENCIA.hoyTitulo)}</h4><ul>${AGENCIA.hoy.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
+        <div class="con-web"><h4>${esc(AGENCIA.conWebTitulo)}</h4><ul>${AGENCIA.conWeb.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
+      </div>
+    </div>
+    <div class="intro-bloque">
+      <h3>Probala como si fueras un cliente</h3>
+      <div class="intro-accesos">${AGENCIA.funciones.map(([href, t, d]) =>
+        `<a href="${href}" data-ir><b>${esc(t)}</b><span>${esc(d)}</span><i>Ir →</i></a>`).join("")}</div>
+      <p class="intro-nota">${esc(AGENCIA.nota)}</p>
+    </div>
+    <div class="intro-bloque" id="intro-plan">
+      <h3>${esc(AGENCIA.planTitulo)}</h3>
+      <ol class="plan">${AGENCIA.plan.map(([t, d]) => `<li><strong>${esc(t)}</strong><span>${esc(d)}</span></li>`).join("")}</ol>
+    </div>
+    <div class="intro-bloque intro-cierre">
+      <p>${esc(AGENCIA.cierre)}</p>
+      <p class="intro-firma"><strong>${esc(AGENCIA.firma)}</strong> · ${esc(AGENCIA.nombre)}</p>
+      <div class="acciones" style="margin:0"><button type="button" class="btn btn-primario" id="intro-ver">Probar la demo</button></div>
+    </div>`;
   const abrir = () => { if (typeof dlg.showModal === "function") { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", ""); dlg.scrollTop = 0; $("#intro-titulo").focus(); };
   const cerrar = () => (dlg.close ? dlg.close() : dlg.removeAttribute("open"));
   const entrar = () => { entrarPantallaCompleta(); cerrar(); };   // "Ver la demo" abre en pantalla completa
   $("#intro-ver").addEventListener("click", entrar);
   $("#intro-cerrar").addEventListener("click", entrar);
+  $$("[data-entrar]", dlg).forEach((b) => b.addEventListener("click", entrar));
+  $$("[data-interno]", dlg).forEach((a) => a.addEventListener("click", (e) => {   // salto dentro de la propuesta
+    e.preventDefault(); $(a.getAttribute("href"), dlg).scrollIntoView({ behavior: "smooth", block: "start" });
+  }));
   $$("[data-ir]", dlg).forEach((a) => a.addEventListener("click", entrar));   // cierra y deja que el ancla haga scroll
   dlg.addEventListener("click", (e) => { if (e.target === dlg) cerrar(); }); // clic fuera de la tarjeta
   $("#etiqueta-demo").addEventListener("click", abrir);
