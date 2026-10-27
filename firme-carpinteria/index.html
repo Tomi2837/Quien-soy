@@ -46,6 +46,7 @@
   --radio-chico:8px;
   --sombra:0 1px 2px rgba(30,27,24,.06), 0 8px 24px rgba(30,27,24,.08);
   --alto-header:68px;
+  --top-fijo:var(--alto-header);   /* alto ocupado por el encabezado (0 cuando se oculta) */
 }
 
 /* =========================================================
@@ -293,7 +294,7 @@ select:focus,.campo input:focus,.campo textarea:focus{border-color:var(--carbon)
 }
 @media (max-width:999px){
   .config-layout{display:flex;flex-direction:column}
-  .visor-col{order:-1;position:sticky;top:var(--alto-header);z-index:5;background:var(--hueso);padding-block:8px 10px;box-shadow:0 10px 14px -10px rgba(30,27,24,.35)}
+  .visor-col{order:-1;position:sticky;top:var(--top-fijo);transition:top .3s ease;z-index:5;background:var(--hueso);padding-block:8px 10px;box-shadow:0 10px 14px -10px rgba(30,27,24,.35)}
   .visor-sticky{gap:8px}
   .visor{height:clamp(230px,40dvh,440px);min-height:0}
   .visor-sticky .avisos{max-height:4.8em;overflow-y:auto}
@@ -604,9 +605,17 @@ dialog::backdrop{background:rgba(30,27,24,.6);backdrop-filter:blur(3px)}
 .intro-firma{font-size:.92rem;color:var(--tinta-suave)}
 .intro-firma strong{color:var(--carbon)}
 .intro-cuerpo .acciones{margin-top:4px}
-.etiqueta-demo{position:fixed;left:calc(16px + env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:89;background:var(--carbon);color:var(--crema);border:1px solid #4A423B;border-radius:999px;padding:10px 16px;font-family:var(--f-mono);font-size:.74rem;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+/* Modo preview para la app de la agencia: encabezado que se oculta al bajar + pantalla completa */
+html.sin-header{--top-fijo:0px}
+.header{transition:border-color .3s, box-shadow .3s, transform .35s ease}
+html.sin-header .header{transform:translateY(-100%);box-shadow:none}
+.barra-demo{position:fixed;left:calc(16px + env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:89;display:flex;gap:8px;align-items:center}
+.etiqueta-demo{display:inline-flex;align-items:center;gap:6px;min-height:40px;background:var(--carbon);color:var(--crema);border:1px solid #4A423B;border-radius:999px;padding:10px 16px;font-family:var(--f-mono);font-size:.74rem;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .etiqueta-demo b{color:var(--mostaza);font-weight:600}
 .etiqueta-demo:hover{background:var(--carbon-2)}
+.etiqueta-demo svg{width:16px;height:16px;flex:none}
+.etiqueta-demo[aria-pressed="true"]{background:var(--mostaza);color:var(--carbon);border-color:var(--mostaza-osc)}
+@media (max-width:520px){.etiqueta-demo .texto-largo{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}.etiqueta-demo{padding:10px 12px}}
 @media (max-width:520px){.toast{bottom:calc(76px + env(safe-area-inset-bottom,0px))}}
 
 /* Zona de impresión (solo visible al imprimir la lista de cortes) */
@@ -1033,7 +1042,13 @@ dialog::backdrop{background:rgba(30,27,24,.6);backdrop-filter:blur(3px)}
   <div class="intro-cab"><div><strong data-agencia="nombre">NALTA Digital</strong><br><span>Demo para <span data-dato="NOMBRE_NEGOCIO">Firme Carpintería</span></span></div><button type="button" class="btn btn-primario btn-chico" id="intro-cerrar">Ver la demo</button></div>
   <div class="intro-cuerpo" id="intro-cuerpo"></div>
 </dialog>
-<button type="button" class="etiqueta-demo" id="etiqueta-demo" aria-haspopup="dialog">Demo · <b data-agencia="nombre">NALTA Digital</b></button>
+<div class="barra-demo">
+  <button type="button" class="etiqueta-demo" id="etiqueta-demo" aria-haspopup="dialog">Demo · <b data-agencia="nombre">NALTA Digital</b></button>
+  <button type="button" class="etiqueta-demo" id="btn-pantalla" aria-pressed="false" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    <span class="texto-largo">Pantalla completa</span>
+  </button>
+</div>
 
 <!-- Aviso al agregar al pedido -->
 <div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-texto"></span><a href="#pedido">Ver pedido</a></div>
@@ -2641,12 +2656,47 @@ function iniciarIntroAgencia() {
     <div class="acciones"><button type="button" class="btn btn-primario" id="intro-ver">Ver la demo</button></div>`;
   const abrir = () => { if (typeof dlg.showModal === "function") { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute("open", ""); dlg.scrollTop = 0; $("#intro-titulo").focus(); };
   const cerrar = () => (dlg.close ? dlg.close() : dlg.removeAttribute("open"));
-  $("#intro-ver").addEventListener("click", cerrar);
-  $("#intro-cerrar").addEventListener("click", cerrar);
-  $$("[data-ir]", dlg).forEach((a) => a.addEventListener("click", cerrar));   // cierra y deja que el ancla haga scroll
+  const entrar = () => { entrarPantallaCompleta(); cerrar(); };   // "Ver la demo" abre en pantalla completa
+  $("#intro-ver").addEventListener("click", entrar);
+  $("#intro-cerrar").addEventListener("click", entrar);
+  $$("[data-ir]", dlg).forEach((a) => a.addEventListener("click", entrar));   // cierra y deja que el ancla haga scroll
   dlg.addEventListener("click", (e) => { if (e.target === dlg) cerrar(); }); // clic fuera de la tarjeta
   $("#etiqueta-demo").addEventListener("click", abrir);
   abrir();
+}
+
+/* =====================================================================
+   ██  15d. MODO PREVIEW: encabezado que se oculta + pantalla completa
+   ===================================================================== */
+function entrarPantallaCompleta() {
+  const el = document.documentElement;
+  if (document.fullscreenEnabled && !document.fullscreenElement) el.requestFullscreen().catch(() => { /* el navegador o la app no lo permiten */ });
+}
+function iniciarModoPreview() {
+  const html = document.documentElement, nav = $("#nav");
+  // El encabezado se esconde al bajar y vuelve al subir (o al llegar arriba de todo)
+  let ultimoY = window.scrollY;
+  window.addEventListener("scroll", () => {
+    const y = window.scrollY, d = y - ultimoY;
+    if (Math.abs(d) < 6 && y > 10) return;
+    html.classList.toggle("sin-header", d > 0 && y > 140 && !nav.classList.contains("abierto"));
+    ultimoY = y;
+  }, { passive: true });
+  $("#header").addEventListener("focusin", () => html.classList.remove("sin-header"));   // navegación con teclado
+
+  // Botón de pantalla completa (solo donde el navegador lo permite)
+  const btn = $("#btn-pantalla");
+  if (!document.fullscreenEnabled) return;
+  btn.hidden = false;
+  const refrescar = () => {
+    const activa = !!document.fullscreenElement;
+    btn.setAttribute("aria-pressed", String(activa));
+    btn.setAttribute("aria-label", activa ? "Salir de pantalla completa" : "Ver en pantalla completa");
+    $(".texto-largo", btn).textContent = activa ? "Salir" : "Pantalla completa";
+  };
+  btn.addEventListener("click", () => (document.fullscreenElement ? document.exitFullscreen() : entrarPantallaCompleta()));
+  document.addEventListener("fullscreenchange", refrescar);
+  refrescar();
 }
 
 /* =====================================================================
@@ -2667,6 +2717,7 @@ iniciarItemsPedido();
 iniciarPedido();
 iniciarGestion();
 revelarAlScroll();
+iniciarModoPreview();
 iniciarIntroAgencia();
 </script>
 </body>
