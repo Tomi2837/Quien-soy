@@ -271,13 +271,47 @@ select:focus,.campo input:focus,.campo textarea:focus{border-color:var(--carbon)
 
 /* Visor 3D */
 .visor-col{display:flex;flex-direction:column;gap:20px;min-width:0}
-@media (min-width:1000px){.visor-sticky{position:sticky;top:calc(var(--alto-header) + 16px)}}
 .visor{
   position:relative;border-radius:var(--radio);overflow:hidden;border:1px solid var(--borde);
   background:radial-gradient(ellipse at 50% 30%, #FFFDF8 0%, #F1E8D8 60%, #E6D9C2 100%);
   height:min(68vh,520px);min-height:340px;
 }
-@media (min-width:1000px){.visor{height:min(72vh,620px)}}
+/* ---- Modo "estudio": el 3D nunca se va de pantalla ----
+   Computadora: el bloque ocupa el alto de la ventana; el 3D queda fijo a la derecha
+   y los controles se recorren en el panel lateral, que tiene su propio scroll.
+   Celular/tablet: el 3D queda pegado arriba (sticky) y las opciones pasan por debajo. */
+.config-layout{scroll-margin-top:calc(var(--alto-header) + 12px)}
+.visor-sticky{display:flex;flex-direction:column;gap:12px}
+.visor-sticky > .acciones{margin-top:0}
+@media (min-width:1000px){
+  .config-layout{height:calc(100dvh - var(--alto-header) - 28px);min-height:560px;max-height:980px;align-items:stretch}
+  .config-layout > .controles{overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;scrollbar-width:thin}
+  .visor-col,.visor-sticky{height:100%;min-height:0}
+  .visor{flex:1 1 auto;height:auto;min-height:0}
+  .visor-sticky .avisos{flex:none;max-height:28%;overflow-y:auto}
+  .visor-sticky > .acciones{flex:none}
+}
+@media (max-width:999px){
+  .config-layout{display:flex;flex-direction:column}
+  .visor-col{order:-1;position:sticky;top:var(--alto-header);z-index:5;background:var(--hueso);padding-block:8px 10px;box-shadow:0 10px 14px -10px rgba(30,27,24,.35)}
+  .visor-sticky{gap:8px}
+  .visor{height:clamp(230px,40dvh,440px);min-height:0}
+  .visor-sticky .avisos{max-height:4.8em;overflow-y:auto}
+  .visor-sticky .aviso{padding:6px 10px;font-size:.8rem}
+  .visor-sticky > .acciones{gap:8px}
+  .visor-sticky > .acciones .btn{min-height:38px;padding:.4em .9em;font-size:.85rem}
+}
+@media (max-width:560px){
+  /* Visor chico: botones de vista arriba, "Abrir cajones" y "Cotas" abajo a la izquierda */
+  .visor .visor-barra{top:8px;left:8px;right:8px}
+  .vistas button{padding:6px 10px;font-size:.78rem;min-height:34px}
+  .visor-acciones{position:absolute;left:0;top:calc(clamp(230px,40dvh,440px) - 58px)}
+  .visor-acciones .btn{min-height:34px;font-size:.76rem;padding:.3em .8em}
+  .visor .visor-pie{left:8px;right:8px;bottom:8px;justify-content:flex-end}
+  .chip-medidas{display:none}
+  /* Al enfocar o saltar a un control, que no quede escondido debajo del visor fijo */
+  .controles :is(input,select,button,label,.grupo,.columna){scroll-margin-top:calc(var(--alto-header) + clamp(230px,40dvh,440px) + 130px)}
+}
 .visor-lienzo{position:absolute;inset:0;touch-action:none}
 .visor-lienzo:focus-visible{outline:3px solid var(--mostaza);outline-offset:-3px}
 .visor canvas{width:100%!important;height:100%!important}
@@ -516,7 +550,7 @@ dialog::backdrop{background:rgba(30,27,24,.6);backdrop-filter:blur(3px)}
       <h1 id="hero-titulo" data-dato-html="HERO_TITULO">Muebles a medida, <em>diseñados por vos</em></h1>
       <p class="hero-sub" data-dato="HERO_SUBTITULO">Elegí medidas, materiales y terminaciones, miralo en 3D y recibí tu presupuesto al instante.</p>
       <div class="hero-botones">
-        <a class="btn btn-primario" href="#configurador">
+        <a class="btn btn-primario" href="#estudio">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V5h14v16M9 9h6M9 13h6M12 13v8"/></svg>
           Diseñar mi mueble
         </a>
@@ -598,7 +632,7 @@ dialog::backdrop{background:rgba(30,27,24,.6);backdrop-filter:blur(3px)}
       <p>Definí las medidas y el contenido de cada columna. El modelo 3D, la lista de cortes y el presupuesto se actualizan al instante.</p>
     </div>
 
-    <div class="config-layout">
+    <div class="config-layout" id="estudio">
       <!-- ---------- PANEL DE CONTROLES ---------- -->
       <form class="panel controles" id="form-config" aria-label="Parámetros del mueble" onsubmit="return false">
         <fieldset class="grupo">
@@ -667,8 +701,8 @@ dialog::backdrop{background:rgba(30,27,24,.6);backdrop-filter:blur(3px)}
               <span class="chip-precio" id="chip-precio">—</span>
             </div>
           </div>
-          <div class="avisos" id="avisos" role="status" aria-live="polite" style="margin-top:14px"></div>
-          <div class="acciones" style="margin-top:14px">
+          <div class="avisos" id="avisos" role="status" aria-live="polite"></div>
+          <div class="acciones">
             <button type="button" class="btn btn-oscuro" id="btn-guardar-variante">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
               Guardar variante
@@ -2076,7 +2110,7 @@ function iniciarVariantes() {
     const i = +b.dataset.i;
     if (b.dataset.accion === "cargar") {
       estado = copiar(variantes[i].estado); sincronizarControles(true); actualizar();
-      $("#configurador").scrollIntoView({ behavior: "smooth" });
+      $("#estudio").scrollIntoView({ behavior: "smooth" });
     } else { variantes.splice(i, 1); persistirVariantes(); renderVariantes(); }
   });
   renderVariantes();
