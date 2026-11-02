@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<title>NALTA · Herramienta para carpinterías</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@300;400;500;600;700;800&display=block" rel="stylesheet">
+<style>
+  :root{--crema:#F6F0E5;--hueso:#ECE3D2;--carbon:#1E1B18;--mostaza:#E2A82A;--mostaza-osc:#B9831A;--nogal:#5C3D2E;--roble:#C9A27A;--blanco:#FFFDF9}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1080px;height:1920px;overflow:hidden;background:var(--carbon)}
+  body{font-family:Manrope,sans-serif;color:var(--carbon);-webkit-font-smoothing:antialiased}
+  #frame{position:absolute;inset:0;overflow:hidden}
+  #bg{position:absolute;inset:0}
+  #stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;will-change:transform}
+  #overlay{position:absolute;inset:0;pointer-events:none}
+  .abs{position:absolute}
+
+  /* ---------- Teléfono ---------- */
+  #phone{position:absolute;width:628px;height:1326.46px;border-radius:78px;background:#151311;transform-origin:50% 50%;
+    box-shadow:0 60px 90px -40px rgba(30,27,24,.55),0 18px 30px -18px rgba(30,27,24,.35),inset 0 0 0 2px #3a332c}
+  #screen{position:absolute;left:14px;top:14px;width:600px;height:1298.46px;border-radius:64px;overflow:hidden;background:#F6F0E5}
+  #rec{position:absolute;left:0;top:72.3px;width:600px;height:1298.46px}
+  #sbar{position:absolute;left:0;top:0;width:600px;height:72.3px;z-index:15;display:flex;align-items:center;justify-content:space-between;padding:10px 52px 0 64px;font:700 25px Manrope}
+  #sbar svg{height:22px}
+  #island{position:absolute;left:50%;top:18px;width:150px;height:42px;margin-left:-75px;border-radius:21px;background:#0d0c0b;z-index:20}
+  .ui{position:absolute;left:0;top:0;width:390px;height:844px;transform:scale(1.5384615);transform-origin:0 0;overflow:hidden}
+  #screenOff{position:absolute;inset:0;background:#151311;opacity:0;z-index:30}
+  #touch{position:absolute;left:0;top:0;z-index:25}
+  #touch .dot{position:absolute;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;background:rgba(255,253,249,.82);
+    border:3px solid rgba(30,27,24,.28);box-shadow:0 8px 22px rgba(30,27,24,.35)}
+  #touch .ring{position:absolute;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;border:3px solid rgba(255,253,249,.9)}
+
+  /* Pantalla bloqueada (escena 1) */
+  #lock .wall{position:absolute;inset:0;background:#2a221c}
+  #lock .wall img{position:absolute;left:-20%;top:-10%;width:140%;height:120%;object-fit:cover;filter:blur(14px) brightness(.55) saturate(1.1)}
+  #lock .hora{position:absolute;left:0;right:0;top:118px;text-align:center;color:#fff;font:300 86px/1 Manrope;letter-spacing:-2px}
+  #lock .fecha{position:absolute;left:0;right:0;top:92px;text-align:center;color:rgba(255,255,255,.85);font:600 17px Manrope}
+  .notif{position:absolute;left:10px;width:370px;height:76px;border-radius:22px;background:rgba(246,240,232,.9);padding:11px 14px 0 60px;
+    box-shadow:0 6px 18px rgba(0,0,0,.18)}
+  .notif .ic{position:absolute;left:12px;top:15px;width:38px;height:38px;border-radius:10px;background:#25D366;display:grid;place-items:center}
+  .notif .ic svg{width:24px;height:24px}
+  .notif .app{display:flex;justify-content:space-between;font:600 11.5px Manrope;color:#6b625a;letter-spacing:.02em}
+  .notif .tit{font:700 15px Manrope;color:#1E1B18;margin-top:1px}
+  .notif .msg{font:500 15px Manrope;color:#2a2420;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:296px}
+
+  /* Chat (escena 8) */
+  #chat{background:#EFE8DF}
+  #chat .top{position:absolute;left:0;right:0;top:0;height:112px;background:#FFFDF9;border-bottom:1px solid #e3d9cb}
+  #chat .back{position:absolute;left:12px;top:62px;font:500 30px/1 Manrope;color:#1E1B18}
+  #chat .av{position:absolute;left:38px;top:58px;width:40px;height:40px;border-radius:50%;background:#C9A27A;color:#fff;font:700 15px/40px Manrope;text-align:center}
+  #chat .nom{position:absolute;left:88px;top:58px;font:700 17px Manrope;color:#1E1B18}
+  #chat .est{position:absolute;left:88px;top:80px;font:500 13px Manrope;color:#2f8a57}
+  #chat .hoy{position:absolute;left:50%;top:128px;transform:translateX(-50%);background:#fffdf9;border-radius:8px;padding:4px 10px;font:600 12px Manrope;color:#6b625a}
+  #chat .scroll{position:absolute;left:0;right:0;top:112px;bottom:64px;overflow:hidden}
+  #chat .inner{position:absolute;left:0;right:0;top:48px}
+  .burb{position:relative;margin:0 0 10px 12px;max-width:336px;background:#fff;border-radius:0 12px 12px 12px;padding:9px 11px 20px;
+    font:500 13.6px/1.42 Manrope;color:#151311;white-space:pre-wrap;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+  .burb b{font-weight:800}
+  .burb .h{position:absolute;right:9px;bottom:5px;font:500 11px Manrope;color:#8a8076}
+  .burb.out{margin:0 12px 10px auto;background:#D9F7CF;border-radius:12px 0 12px 12px;max-width:300px;padding-right:58px}
+  #chat .bar{position:absolute;left:0;right:0;bottom:0;height:64px;background:#EFE8DF}
+  #chat .campo{position:absolute;left:10px;right:62px;bottom:12px;height:42px;border-radius:21px;background:#fff;font:500 15px/42px Manrope;color:#9a9088;padding-left:16px}
+  #chat .mic{position:absolute;right:10px;bottom:12px;width:42px;height:42px;border-radius:50%;background:#1f8a4c}
+
+  /* ---------- Tipografía y máscaras ---------- */
+  .tb{position:absolute;left:96px}
+  .line{display:block;overflow:hidden;padding:.06em 0 .14em;margin:-.06em 0 -.14em}
+  .line > span,.w > span{display:inline-block;will-change:transform}
+  .w{display:inline-block;overflow:hidden;padding:.06em 0 .16em;margin:-.06em 0 -.16em;vertical-align:top}
+  .h1{font-family:Fraunces,serif;font-weight:600;font-size:96px;line-height:1.02;letter-spacing:-.012em;font-variation-settings:"opsz" 96}
+  .h1 i{font-style:italic;font-weight:500}
+  .mono{font-family:"JetBrains Mono",monospace}
+  #hud{position:absolute;left:96px;top:196px;display:flex;align-items:center;gap:18px;font:500 25px "JetBrains Mono",monospace;letter-spacing:.14em;color:var(--carbon)}
+  #hud .num{display:flex;align-items:center}
+  #hud .dig{display:inline-block;height:1.2em;overflow:hidden;vertical-align:top}
+  #digs{display:block}#digs > span{display:block;line-height:1.2em;height:1.2em}
+  #hud .bar{width:46px;height:2px;background:var(--mostaza)}
+  #hud .lab{position:relative;height:1.3em;overflow:hidden;min-width:600px}
+  #hud .lab > span{position:absolute;left:0;top:0;line-height:1.3em;white-space:nowrap}
+  .pill{position:absolute;left:96px;display:flex;align-items:center;gap:14px;height:68px;padding:0 26px;border-radius:34px;font:600 30px "JetBrains Mono",monospace;letter-spacing:.04em;overflow:hidden}
+  #topband{position:absolute;left:0;right:0;top:0;height:720px;background:linear-gradient(to bottom,rgba(246,240,229,.97) 0,rgba(246,240,229,.94) 520px,rgba(246,240,229,0) 720px);opacity:0}
+
+  /* Morph y tarjetas */
+  #morph{position:absolute;display:none;overflow:hidden}
+  #cota{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:visible}
+  #corte{position:absolute;left:70px;top:610px;width:940px;border-radius:28px;background:var(--blanco);box-shadow:0 40px 80px -30px rgba(30,27,24,.45);overflow:hidden;display:none;transform-origin:0 0}
+  #corte .cab{display:grid;grid-template-columns:1fr 330px 120px;align-items:center;height:72px;padding:0 34px;background:var(--carbon);color:var(--crema);font:600 22px "JetBrains Mono",monospace;letter-spacing:.12em}
+  #corte .fila{position:relative;display:grid;grid-template-columns:1fr 330px 120px;align-items:center;height:70px;padding:0 34px;border-bottom:1px solid #E7DECF}
+  #corte .fila:nth-child(odd){background:#FBF7F0}
+  #corte .fila .hl{position:absolute;inset:6px 12px;border-radius:14px;background:var(--mostaza);transform-origin:0 50%;transform:scaleX(0)}
+  #corte .fila .c{position:relative;overflow:hidden;padding:.08em 0 .14em}
+  #corte .fila .c > span{display:inline-block}
+  #corte .fila .p{font:600 31px Manrope}
+  #corte .fila .m,#corte .fila .q{font:500 30px "JetBrains Mono",monospace}
+  #corte .fila .q{text-align:right}
+  #corte .pie{height:96px;display:flex;align-items:center;padding:0 34px;font:500 27px "JetBrains Mono",monospace;color:#5E5249}
+  #veil{position:absolute;inset:0;background:var(--crema);opacity:0}
+  #bubbleMorph{position:absolute;display:none}
+
+  /* Cierre */
+  #fin{position:absolute;inset:0;transform-origin:540px 960px}
+  #pillCta{position:absolute;display:none;overflow:hidden}
+  #pillCta .t{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font:800 44px Manrope;color:var(--carbon);letter-spacing:-.01em}
+  #logoMask{position:absolute;left:390px;top:806px;width:300px;height:330px;overflow:hidden}
+  #logo{position:absolute;left:25px;top:20px;width:250px;height:280px;background:#fff;border-radius:16px;transform:rotate(-4deg);box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+  #logo .l{position:absolute;left:0;right:0;text-align:center;font:800 92px/1 Manrope;letter-spacing:-.06em;color:#1E1B18}
+  #logo .u{position:absolute;left:18px;right:18px;bottom:-10px;height:14px;background:#C2449A;border-radius:7px;transform:rotate(-3deg)}
+
+  #grain{position:absolute;inset:-128px;opacity:.085;mix-blend-mode:overlay;pointer-events:none;background-size:256px 256px}
+  #vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 46%,rgba(0,0,0,0) 62%,rgba(25,16,8,.12) 100%)}
+</style>
+</head>
+<body>
+<div id="frame">
+  <div id="bg"></div>
+  <div id="stage">
+    <svg id="cota" viewBox="0 0 1080 1920"></svg>
+    <div id="phone">
+      <div id="screen">
+        <img id="rec" alt="">
+        <div id="sbar"><span>15:30</span><svg viewBox="0 0 96 22"><g fill="currentColor"><rect x="0" y="14" width="5" height="8" rx="1.5"/><rect x="8" y="10" width="5" height="12" rx="1.5"/><rect x="16" y="6" width="5" height="16" rx="1.5"/><rect x="24" y="2" width="5" height="20" rx="1.5"/><path d="M44 8a14 14 0 0 1 18 0l-2.4 2.6a10.5 10.5 0 0 0-13.2 0zM48.4 12.6a8 8 0 0 1 9.2 0L53 17.4z"/><rect x="68" y="3" width="24" height="16" rx="4.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="71" y="6" width="17" height="10" rx="2"/><rect x="93.5" y="8.5" width="2.5" height="5" rx="1"/></g></svg></div>
+        <div class="ui" id="lock">
+          <div class="wall"><img src="../renders/comoda-roble.jpg" alt=""></div>
+          <div class="fecha">jueves 6 de noviembre</div>
+          <div class="hora">15:28</div>
+          <div id="notifs"></div>
+        </div>
+        <div class="ui" id="chat">
+          <div class="top"><div class="back">‹</div><div class="av">LG</div><div class="nom">Laura Gómez</div><div class="est">en línea</div></div>
+          <div class="scroll"><div class="hoy">Hoy</div><div class="inner" id="chatInner"></div></div>
+          <div class="bar"><div class="campo">Mensaje</div><div class="mic"></div></div>
+        </div>
+        <div id="touch"><i class="ring"></i><i class="dot"></i></div>
+        <div id="screenOff"></div>
+        <div id="island"></div>
+      </div>
+    </div>
+  </div>
+  <div id="overlay">
+    <div id="topband"></div>
+    <div id="veil"></div>
+    <div id="corte"></div>
+    <div id="bubbleMorph"></div>
+    <div id="morph"></div>
+    <div id="hud"><div class="num"><span>0</span><span class="dig"><span id="digs"></span></span></div><div class="bar"></div><div class="lab" id="labs"></div></div>
+    <div id="textos"></div>
+    <div id="fin"><div id="pillCta"><div class="t" id="ctaTxt"></div></div><div id="logoMask"><div id="logo"><div class="l" style="top:22px">NA</div><div class="l" style="top:104px">LT</div><div class="l" style="top:186px">A</div><div class="u"></div></div></div></div>
+  </div>
+  <div id="grain"></div>
+  <div id="vig"></div>
+</div>
+<script src="meta.js"></script>
+<script>
+/* =====================================================================
+   Motor de animación: todo se calcula a partir del tiempo t (segundos),
+   así cada cuadro se puede renderizar de forma exacta y repetible.
+   ===================================================================== */
+const W = 1080, H = 1920, FPS = 30, DUR = 50, REC0 = 14.4;           // REC0: la grabación arranca en 14,4 s
+const SC = 600 / 390, BZ = 14, PHW = 628, PHH = 1326.46;
+const M = window.META;
+const $ = (s) => document.querySelector(s);
+
+function bezier(x1, y1, x2, y2) {
+  const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+  const sx = (t) => ((ax * t + bx) * t + cx) * t, sy = (t) => ((ay * t + by) * t + cy) * t;
+  return (x) => { if (x <= 0) return 0; if (x >= 1) return 1; let lo = 0, hi = 1, t = x; for (let i = 0; i < 40; i++) { const v = sx(t); if (Math.abs(v - x) < 1e-6) break; if (v < x) lo = t; else hi = t; t = (lo + hi) / 2; } return sy(t); };
+}
+const eOut = bezier(0.22, 1, 0.36, 1);       // salida suave (texto, entradas)
+const eIO = bezier(0.65, 0, 0.35, 1);        // cámara y transformaciones
+const eIn = bezier(0.55, 0, 0.75, 0.25);     // salidas
+const cl = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const pr = (t, a, b) => cl((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const mix = (a, b, k) => Array.isArray(a) ? a.map((v, i) => lerp(v, b[i], k)) : lerp(a, b, k);
+// pista de keyframes: [[t, valor, ease?], ...]
+function tr(t, keys) {
+  if (t <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) {
+    const [t1, v1, e] = keys[i], [t0, v0] = keys[i - 1];
+    if (t <= t1) return mix(v0, v1, (e || eIO)(pr(t, t0, t1)));
+  }
+  return keys[keys.length - 1][1];
+}
+const rgb = (c) => `rgb(${c.map((v) => Math.round(v)).join(',')})`;
+const CREMA = [246, 240, 229], CARBON = [30, 27, 24], MOSTAZA = [226, 168, 42];
+
+/* ---------- Teléfono y cámara ---------- */
+function phoneAt(t) {          // centro (x,y) y escala del teléfono en el escenario
+  return {
+    x: 540,
+    y: tr(t, [[0, 2500], [0.95, 1250, eOut], [3.2, 1250], [9.3, 1250], [13.4, 1250], [14.3, 1223]]),
+    s: tr(t, [[0, 0.8], [4.05, 0.8], [4.1, 0.86], [13.4, 0.86], [14.3, 1]]),
+  };
+}
+// punto de la pantalla (px CSS del celular, 390x844) -> escenario
+function p2s(t, x, y) {
+  const P = phoneAt(t);
+  return [P.x + (BZ + x * SC - PHW / 2) * P.s, P.y + (BZ + y * SC - PHH / 2) * P.s];
+}
+const SB = 47;                                         // alto de la barra de estado del celular (px CSS)
+const p2r = (t, x, y) => p2s(t, x, y + SB);           // punto de la grabación -> escenario
+const rectAt = (f, sel) => (M.frames[String(f)] || {})[sel];
+const centro = (r) => [r[0] + r[2] / 2, r[1] + r[3] / 2];
+// foco de cámara sobre un elemento grabado (frame de la grabación)
+function foco(f, sel, dx = 0, dy = 0) { const c = centro(rectAt(f, sel)); return p2r(20, c[0] + dx, c[1] + dy); }
+const ID = { f: [540, 960], s: 1, a: [540, 960] };
+const VISOR = foco(200, '#visor', 0, 20);
+const PRECIO = foco(360, '#chip-precio');
+const TOAST = foco(420, '#toast');
+const COLORES = foco(300, '#colores', 0, -30);
+const PED = foco(830, '#estado-3', 0, -120);
+const CHIPS = p2r(20, 195, 205);
+// cámara: foco (punto del escenario), escala y ancla (punto de pantalla donde cae el foco)
+const CAM = [
+  [0, ID], [0.9, ID], [3.1, { f: p2s(2, 195, 300), s: 1.18, a: [540, 1060] }],
+  [3.6, { f: p2s(2, 195, 300), s: 1.18, a: [540, 1060] }], [4.2, ID],
+  [10.0, ID], [13.1, { f: [540, 1250], s: 1.06, a: [540, 1250] }], [14.2, ID],
+  [16.15, ID], [16.65, { f: CHIPS, s: 1.12, a: [540, 1080] }], [17.45, { f: CHIPS, s: 1.12, a: [540, 1080] }], [18.05, ID],
+  [20.3, ID], [21.05, { f: VISOR, s: 1.38, a: [540, 1150] }], [22.55, { f: VISOR, s: 1.38, a: [540, 1150] }],
+  [23.25, { f: COLORES, s: 1.22, a: [540, 1180] }], [24.05, { f: COLORES, s: 1.22, a: [540, 1180] }],
+  [24.7, { f: VISOR, s: 1.42, a: [540, 1150] }], [26.15, { f: VISOR, s: 1.42, a: [540, 1150] }],
+  [26.9, { f: PRECIO, s: 1.75, a: [640, 1180] }], [27.55, { f: PRECIO, s: 1.75, a: [640, 1180] }],
+  [28.15, { f: TOAST, s: 1.3, a: [540, 1220] }], [29.3, { f: TOAST, s: 1.3, a: [540, 1220] }], [30.0, ID],
+  [35.2, ID], [38.4, { f: [540, 1223], s: 1.08, a: [540, 1262] }], [39.25, ID],
+  [40.85, ID], [41.6, { f: PED, s: 1.3, a: [540, 1180] }], [43.4, { f: PED, s: 1.3, a: [540, 1180] }], [44.3, ID],
+];
+function camAt(t) {
+  let k = 0; while (k < CAM.length - 1 && CAM[k + 1][0] <= t) k++;
+  const [t0, c0] = CAM[k], nx = CAM[Math.min(k + 1, CAM.length - 1)];
+  const q = nx === CAM[k] ? 0 : eIO(pr(t, t0, nx[0])), c1 = nx[1];
+  const c = { f: mix(c0.f, c1.f, q), s: lerp(c0.s, c1.s, q), a: mix(c0.a, c1.a, q) };
+  // respiración de cámara en mano, muy sutil
+  c.a = [c.a[0] + Math.sin(t * 0.9) * 1.6 + Math.sin(t * 2.3) * 0.8, c.a[1] + Math.cos(t * 0.7) * 1.8];
+  return c;
+}
+const s2v = (c, p) => [c.a[0] + c.s * (p[0] - c.f[0]), c.a[1] + c.s * (p[1] - c.f[1])];   // escenario -> pantalla
+
+/* ---------- Textos con máscara ---------- */
+const TEXTOS = [];
+function texto(lineas, { x = 96, y, size = 96, color = '#1E1B18', tin, tout, modo = 'line', clase = 'h1', st, align = 'left', w }) {
+  const el = document.createElement('div'); el.className = 'tb ' + clase;
+  el.style.cssText = `left:${x}px;top:${y}px;font-size:${size}px;color:${color};text-align:${align};${w ? 'width:' + w + 'px;' : ''}`;
+  const unidades = [];
+  for (const ln of lineas) {
+    const wrap = document.createElement('div'); wrap.className = 'line';
+    if (modo === 'word') {
+      wrap.style.overflow = 'visible';
+      ln.split(/(?<=\s)/).forEach((pal) => { const m = document.createElement('span'); m.className = 'w'; const s = document.createElement('span'); s.innerHTML = pal.replace(/ $/, '&nbsp;'); m.appendChild(s); wrap.appendChild(m); unidades.push(s); });
+    } else { const s = document.createElement('span'); s.innerHTML = ln; wrap.appendChild(s); unidades.push(s); }
+    el.appendChild(wrap);
+  }
+  $('#textos').appendChild(el);
+  const o = { el, unidades, tin, tout, st: st || (modo === 'word' ? 0.055 : 0.07) };
+  TEXTOS.push(o); return o;
+}
+function pintarTexto(o, t) {
+  const fin = o.tout == null ? Infinity : o.tout + o.unidades.length * 0.045 + 0.5;
+  if (t < o.tin - 0.01 || t > fin) { o.el.style.display = 'none'; return; }
+  o.el.style.display = 'block';
+  o.unidades.forEach((s, i) => {
+    let y = (1 - eOut(pr(t, o.tin + i * o.st, o.tin + i * o.st + 0.78))) * 118;
+    if (o.tout != null) y -= eIn(pr(t, o.tout + i * 0.045, o.tout + i * 0.045 + 0.46)) * 118;
+    s.style.transform = `translateY(${y.toFixed(2)}%)`;
+  });
+}
+
+/* ---------- Escena 1: notificaciones ---------- */
+const NOTIFS = [
+  [0.95, 'Laura', 'Hola! cuánto sale un placard de 2 metros?'],
+  [1.40, 'Diego M.', 'precio?'],
+  [1.80, 'Caro Benítez', 'Hacen cocinas? Me pasás precio'],
+  [2.15, 'Martín', 'info x privado'],
+  [2.45, 'Sofi', 'Buenas! precio de una biblioteca?'],
+  [2.72, 'Juan Pablo', '¿Precio?'],
+];
+const ICON = '<svg viewBox="0 0 24 24"><path fill="#fff" d="M12 3.2a8.8 8.8 0 0 0-7.6 13.2L3.3 20.7l4.4-1.1A8.8 8.8 0 1 0 12 3.2z"/></svg>';
+NOTIFS.forEach(([, n, m], i) => { const d = document.createElement('div'); d.className = 'notif'; d.id = 'n' + i; d.innerHTML = `<div class="ic">${ICON}</div><div class="app"><span>WHATSAPP</span><span>ahora</span></div><div class="tit">${n}</div><div class="msg">${m}</div>`; $('#notifs').appendChild(d); });
+function pintarNotifs(t) {
+  NOTIFS.forEach(([t0], i) => {
+    const d = $('#n' + i); if (t < t0) { d.style.opacity = 0; return; }
+    let idx = 0; for (let j = i + 1; j < NOTIFS.length; j++) idx += eOut(pr(t, NOTIFS[j][0], NOTIFS[j][0] + 0.42));
+    const k = eOut(pr(t, t0, t0 + 0.42));
+    d.style.top = (232 + idx * 84 - (1 - k) * 34) + 'px';
+    d.style.opacity = k * (i === 5 && t > 3.22 ? 0 : 1);
+    d.style.transform = `scale(${0.94 + 0.06 * k})`;
+  });
+}
+
+/* ---------- Chat (escena 8) ---------- */
+const escapar = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const msgHtml = escapar(M.mensaje).replace(/\*([^*\n]+)\*/g, '<b>$1</b>');
+$('#chatInner').innerHTML = `<div class="burb" id="burbIn">${msgHtml}<span class="h">15:31</span></div><div class="burb out" id="burbOut">¡Gracias Laura! Hoy te paso el presupuesto final.<span class="h">15:32 ✓✓</span></div>`;
+
+/* ---------- Escena 7: lista de cortes ---------- */
+const FILAS = M.filas.map((f) => ({ p: f.pieza, m: f.medida, q: f.cant }));
+const HL = FILAS.findIndex((f) => f.p === 'Puerta');
+$('#corte').innerHTML = `<div class="cab"><span>PIEZA</span><span>MEDIDA (MM)</span><span style="text-align:right">CANT.</span></div>` +
+  FILAS.map((f, i) => `<div class="fila" id="fila${i}"><i class="hl"></i><div class="c p"><span>${f.p}</span></div><div class="c m"><span>${f.m}</span></div><div class="c q"><span>${f.q}</span></div></div>`).join('') +
+  `<div class="pie"><div class="c"><span id="pieTxt">19,43 m² de placa · 5 placas · 59,9 m de canto</span></div></div>`;
+
+/* ---------- HUD ---------- */
+const SECC = [[13.6, 'CATÁLOGO'], [18.95, 'DISEÑO 3D'], [26.25, 'PRECIO'], [29.9, 'LISTA DE CORTES'], [34.9, 'PEDIDO POR WHATSAPP'], [39.6, 'PANEL DE PEDIDOS']];
+$('#digs').innerHTML = [1, 2, 3, 4, 5, 6].map((d) => `<span>${d}</span>`).join('');
+$('#labs').innerHTML = SECC.map(([, l], i) => `<span id="lab${i}">${l}</span>`).join('');
+const HUD_IN = 13.6, HUD_OUT = 44.15;
+
+/* ---------- Guion en pantalla (cada entrada coincide con su énfasis) ---------- */
+texto(['Te escriben', 'todo el día…'], { y: 300, color: '#F6F0E5', tin: 0.3, tout: 2.95 });
+const PRECIO_T = texto(['<i>¿Precio?</i>'], { y: 795, size: 236, color: '#B9831A', tin: 3.78, tout: 4.55, align: 'center', x: 0, w: 1080 });
+const L1 = texto(['Sin medidas.'], { y: 520, size: 108, tin: 4.72, tout: 8.32 });
+texto(['Sin fotos.'], { y: 760, size: 108, tin: 5.6, tout: 8.36 });
+texto(['Y muchos', '<i style="color:#5C3D2E">nunca vuelven.</i>'], { y: 1010, size: 108, tin: 6.55, tout: 8.4, st: 0.12 });
+texto(['Una web para que', 'tus clientes', '<i style="color:#B9831A">se coticen solos.</i>'], { y: 262, size: 88, tin: 9.85, tout: 13.25 });
+texto(['Tu catálogo,', '<i style="color:#B9831A">por ambiente.</i>'], { y: 262, tin: 13.75, tout: 18.7 });
+texto(['Diseñan su mueble', '<i style="color:#B9831A">en 3D, al instante.</i>'], { y: 262, size: 88, tin: 18.95, tout: 26.05 });
+texto(['Ven el precio', '<i style="color:#B9831A">en el momento.</i>'], { y: 262, size: 88, tin: 26.25, tout: 29.75 });
+texto(['Y la lista de cortes', '<i style="color:#B9831A">se arma sola.</i>'], { y: 262, size: 88, tin: 29.95, tout: 34.3 });
+texto(['El pedido te llega', '<i style="color:#B9831A">completo.</i>'], { y: 262, size: 88, tin: 34.95, tout: 39.25 });
+texto(['Y lo seguís', '<i style="color:#B9831A">en tu panel.</i>'], { y: 262, size: 88, tin: 39.65, tout: 44.05 });
+const ESTADOS = texto(['Nuevo · Presupuesto · Seña · Producción · Entrega'], { y: 486, size: 30, clase: 'mono', modo: 'word', color: '#5E5249', tin: 40.25, tout: 44.0, st: 0.045 });
+ESTADOS.unidades.find((u) => u.textContent.trim() === 'Producción').id = 'prod';
+texto(['Menos idas', 'y vueltas.'], { y: 300, size: 100, color: '#F6F0E5', tin: 45.0, st: 0.08 });
+texto(['<i style="color:#E2A82A">Más ventas.</i>'], { y: 520, size: 150, color: '#E2A82A', tin: 45.32 });
+texto(['nalta.com.ar  ·  +54 9 11 2845-5040'], { y: 1446, size: 31, clase: 'mono', color: 'rgba(246,240,229,.78)', tin: 46.55, align: 'center', x: 0, w: 1080 });
+
+// píldoras de datos (callouts)
+function pill(id, html, bg, fg, y) { const d = document.createElement('div'); d.className = 'pill'; d.id = id; d.style.cssText = `top:${y}px;background:${bg};color:${fg}`; d.innerHTML = `<span>${html}</span>`; $('#textos').appendChild(d); return d; }
+const PANCHO = pill('pAncho', 'ANCHO <b id="vAncho">1800</b> mm', '#E2A82A', '#1E1B18', 486);
+const PAVISO = pill('pAviso', '△ AVISO: el estante se puede pandear', '#1E1B18', '#F6F0E5', 486);
+const PPRECIO = pill('pPrecio', '≈ $ <b id="vPrecio">0</b>', '#E2A82A', '#1E1B18', 486);
+function pintarPill(el, t, tin, tout) {
+  if (t < tin || t > tout + 0.5) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  const k = eOut(pr(t, tin, tin + 0.6)), o = eIn(pr(t, tout, tout + 0.45));
+  el.style.clipPath = `inset(0 ${(1 - k) * 100}% 0 0 round 34px)`;
+  el.firstChild.style.transform = `translateY(${((1 - k) * 110 - o * 110).toFixed(1)}%)`;
+  el.style.opacity = 1 - o;
+}
+
+/* ---------- Toque en pantalla ---------- */
+const TOQUES = M.toques.map((q) => ({ ...q, t: q.f != null ? REC0 + q.f / FPS : null, t0: q.f0 != null ? REC0 + q.f0 / FPS : null, t1: q.f1 != null ? REC0 + q.f1 / FPS : null }));
+function pintarToque(t) {
+  let x = 0, y = 0, op = 0, sc = 1, ring = 0, ringOp = 0;
+  for (const q of TOQUES) {
+    if (q.tipo === 'tap' && t > q.t - 0.4 && t < q.t + 0.55) {
+      const a = eOut(pr(t, q.t - 0.38, q.t - 0.12)), d = eIn(pr(t, q.t + 0.16, q.t + 0.48));
+      x = q.x; y = q.y; op = a * (1 - d); sc = (0.6 + 0.4 * a) * (1 - 0.16 * Math.sin(Math.PI * pr(t, q.t - 0.07, q.t + 0.11)));
+      const r = pr(t, q.t, q.t + 0.5); ring = 1 + 1.5 * eOut(r); ringOp = r > 0 && r < 1 ? 0.6 * (1 - r) : 0;
+    }
+    if (q.tipo === 'swipe' && t > q.t0 - 0.22 && t < q.t1 + 0.25) {
+      const a = eOut(pr(t, q.t0 - 0.2, q.t0)), d = eIn(pr(t, q.t1, q.t1 + 0.22));
+      x = q.x; y = lerp(q.y0, q.y1, eIO(pr(t, q.t0, q.t1))); op = a * (1 - d); sc = 0.9;
+    }
+    if (q.tipo === 'drag' && t > q.t0 - 0.3 && t < q.t1 + 0.35) {
+      const a = eOut(pr(t, q.t0 - 0.28, q.t0)), d = eIn(pr(t, q.t1 + 0.05, q.t1 + 0.32));
+      const fr = cl((t - REC0) * FPS, q.camino[0][0], q.camino[q.camino.length - 1][0]);
+      const i = q.camino.findIndex((c) => c[0] >= fr); const c = q.camino[Math.max(0, i)];
+      x = c[1]; y = c[2]; op = a * (1 - d); sc = 0.88;
+    }
+  }
+  const dot = $('#touch .dot'), rg = $('#touch .ring');
+  dot.style.cssText = `left:${x * SC}px;top:${(y + SB) * SC}px;opacity:${op.toFixed(3)};transform:scale(${sc.toFixed(3)})`;
+  rg.style.cssText = `left:${x * SC}px;top:${(y + SB) * SC}px;opacity:${ringOp.toFixed(3)};transform:scale(${ring.toFixed(3)})`;
+}
+
+/* ---------- Grabación de la herramienta ---------- */
+let recActual = '';
+function recSrc(t) {
+  let f = Math.round((t - REC0) * FPS);
+  f = cl(f, 0, 899); if (f >= 612 && f < 756) f = f < 700 ? 611 : 756;
+  return `../cap/f_${String(f).padStart(4, '0')}.jpg`;
+}
+
+/* ---------- Render de un cuadro ---------- */
+const VIEW = [0, 0, 1080, 1920];
+async function renderFrame(t) {
+  // fondo: carbón -> crema (morph del 3,2 s) -> carbón (cierre)
+  const bgK = t < 4.0 ? 0 : t < 44.6 ? 1 : 1 - eIO(pr(t, 44.6, 45.25));
+  $('#bg').style.background = rgb(mix(CARBON, CREMA, bgK));
+
+  // teléfono y cámara
+  const P = phoneAt(t), C = camAt(t);
+  const ph = $('#phone');
+  ph.style.left = (P.x - PHW / 2) + 'px'; ph.style.top = (P.y - PHH / 2) + 'px'; ph.style.transform = `scale(${P.s})`;
+  $('#stage').style.transform = `translate(${(C.a[0] - C.s * C.f[0]).toFixed(2)}px,${(C.a[1] - C.s * C.f[1]).toFixed(2)}px) scale(${C.s.toFixed(4)})`;
+  // el teléfono existe en la escena 1 y desde el dibujo del contorno (9,45 s) hasta el cierre
+  const phVis = t < 4.05 || (t >= 9.45 && t < 44.75);
+  ph.style.display = phVis ? 'block' : 'none';
+  const fill = t < 9.45 ? 1 : eOut(pr(t, 9.45, 9.85));
+  ph.style.opacity = t < 9.45 ? 1 : fill;
+  $('#screen').style.clipPath = t >= 9.45 && t < 10.1 ? `inset(0 0 ${((1 - eOut(pr(t, 9.5, 10.05))) * 100).toFixed(2)}% 0 round 64px)` : 'none';
+
+  // contenido de pantalla
+  $('#lock').style.display = t < 4.05 ? 'block' : 'none';
+  if (t < 4.05) pintarNotifs(t);
+  const enChat = t >= 34.55 && t < 39.85;
+  $('#chat').style.display = enChat ? 'block' : 'none';
+  if (enChat) {
+    const k = eOut(pr(t, 34.55, 34.85));
+    $('#chat').style.opacity = k * (1 - eIn(pr(t, 39.3, 39.75)));
+    $('#chat').style.transform = `scale(1.5384615) translateX(${(-eIn(pr(t, 39.3, 39.75)) * 120).toFixed(1)}px)`;
+    $('#burbIn').style.clipPath = `inset(0 0 ${((1 - eOut(pr(t, 34.85, 35.6))) * 100).toFixed(1)}% 0)`;
+    $('#chatInner').style.transform = `translateY(${(-eIO(pr(t, 36.3, 38.0)) * 250).toFixed(1)}px)`;
+    const ko = eOut(pr(t, 38.15, 38.6));
+    $('#burbOut').style.opacity = ko; $('#burbOut').style.transform = `translateY(${((1 - ko) * 26).toFixed(1)}px)`;
+  }
+  $('#screenOff').style.opacity = eIO(pr(t, 44.4, 44.7));
+  pintarToque(t);
+
+  // tarjeta de notificación -> fondo crema + "¿Precio?" (3,2 s -> 4,1 s)
+  pintarMorph(t, C);
+  // banda superior para legibilidad cuando la cámara se acerca
+  $('#topband').style.opacity = (t > 14 && t < 44.5) ? cl((C.s - 1.03) / 0.14) : 0;
+
+  // HUD
+  const hudK = eOut(pr(t, HUD_IN, HUD_IN + 0.7)), hudO = eIn(pr(t, HUD_OUT, HUD_OUT + 0.45));
+  const hud = $('#hud'); hud.style.display = t > HUD_IN - 0.05 && t < HUD_OUT + 0.6 ? 'flex' : 'none';
+  hud.style.clipPath = `inset(${(hudO * 100).toFixed(1)}% ${((1 - hudK) * 100).toFixed(1)}% 0 0)`;
+  let d = 0; SECC.forEach(([ts], i) => { if (i > 0) d += eOut(pr(t, ts, ts + 0.55)); });
+  $('#digs').style.transform = `translateY(${(-d * 1.2).toFixed(3)}em)`;
+  SECC.forEach(([ts], i) => {
+    const nx = SECC[i + 1] ? SECC[i + 1][0] : HUD_OUT + 5;
+    const y = (1 - eOut(pr(t, ts + 0.05, ts + 0.7))) * 120 - eIn(pr(t, nx - 0.05, nx + 0.35)) * 120;
+    $('#lab' + i).style.transform = `translateY(${y.toFixed(1)}%)`;
+  });
+
+  // textos
+  TEXTOS.forEach((o) => pintarTexto(o, t));
+  pintarCota(t);                                // la cota se vuelve el borde del teléfono (8,45 s -> 9,85 s)
+  const prod = document.getElementById('prod');
+  if (prod) { const k = eOut(pr(t, 42.05, 42.4)); prod.style.background = `rgba(226,168,42,${k})`; prod.style.color = k > 0.5 ? '#1E1B18' : ''; prod.style.borderRadius = '10px'; prod.style.padding = '0 8px'; }
+  pintarPill(PANCHO, t, 20.45, 22.32);
+  pintarPill(PAVISO, t, 22.55, 25.9);
+  pintarPill(PPRECIO, t, 26.55, 29.6);
+  const kA = eIO(pr(t, 20.6, 22.3)); $('#vAncho').textContent = String(Math.round((1800 + 1000 * kA) / 10) * 10);
+  const kP = eOut(pr(t, 26.7, 27.75)); $('#vPrecio').textContent = Math.round(1660000 * kP / 1000).toLocaleString('es-AR') + '.000';
+
+  pintarCorte(t, C);
+  pintarFin(t);
+
+  // grano de película
+  const g = $('#grain'); const fr = Math.round(t * FPS);
+  g.style.backgroundImage = `url(noise_${fr % 6}.png)`; g.style.backgroundPosition = `${(fr * 37) % 256}px ${(fr * 91) % 256}px`;
+
+  // imagen de la grabación
+  const src = recSrc(t);
+  if (src !== recActual) { const im = $('#rec'); im.src = src; recActual = src; try { await im.decode(); } catch (e) {} }
+  $('#rec').style.display = t >= 9.45 ? 'block' : 'none';
+  const sb = $('#sbar'); sb.style.display = t >= 9.45 && !enChat ? 'flex' : 'none';
+  const oscuro = t >= 39.6; sb.style.background = oscuro ? '#2B2622' : '#F6F0E5'; sb.style.color = oscuro ? '#F6F0E5' : '#1E1B18';
+  return true;
+}
+
+/* ---------- Escena 1 -> 2: la notificación crece y se vuelve el fondo ---------- */
+function pintarMorph(t, C) {
+  const m = $('#morph');
+  if (t < 3.2 || t > 4.3) { m.style.display = 'none'; return; }
+  const tl = s2v(C, p2s(t, 10, 232)), br = s2v(C, p2s(t, 380, 308));
+  const k = eIO(pr(t, 3.22, 4.05));
+  const x = lerp(tl[0], 0, k), y = lerp(tl[1], 0, k), w = lerp(br[0] - tl[0], 1080, k), h = lerp(br[1] - tl[1], 1920, k);
+  m.style.display = 'block';
+  m.style.cssText = `display:block;left:${x}px;top:${y}px;width:${w}px;height:${h}px;border-radius:${lerp(22 * SC * 0.8 * 1.18, 0, k)}px;background:${rgb(mix([246, 240, 232], CREMA, k))}`;
+}
+
+/* ---------- Escena 2 -> 3: la cota se vuelve el contorno del teléfono ---------- */
+const svg = $('#cota');
+svg.innerHTML = `<g id="cg" stroke="#B9831A" stroke-width="4" fill="none" stroke-linecap="round">
+  <line id="cl"/><line id="ct1"/><line id="ct2"/></g>
+  <path id="oL" fill="none" stroke="#1E1B18" stroke-width="5"/><path id="oR" fill="none" stroke="#1E1B18" stroke-width="5"/>
+  <g id="clab"><rect id="clr" rx="26" fill="#1E1B18"/><text id="clt" font-family="JetBrains Mono" font-weight="600" font-size="34" fill="#F6F0E5" text-anchor="middle">¿? mm</text></g>`;
+let L1W = 0;
+function pintarCota(t) {
+  if (t < 5.0 || t > 10.0) { svg.style.display = 'none'; return; }
+  svg.style.display = 'block';
+  if (!L1W) L1W = L1.unidades[0].getBoundingClientRect().width || 0;
+  const P = { x: 540, y: 1250, s: 0.86 };                         // teléfono de la escena 3
+  const left = P.x - PHW * P.s / 2, right = P.x + PHW * P.s / 2, topY = P.y - PHH * P.s / 2, bot = P.y + PHH * P.s / 2, r = 78 * P.s;
+  const y0 = 520 + 128, x0 = 96, x1 = 96 + L1W;
+  const grow = eOut(pr(t, 5.12, 5.7));
+  const mv = eIO(pr(t, 8.45, 9.1));
+  const ax = lerp(x0, P.x, mv), bx = lerp(x0 + (x1 - x0) * grow, P.x, 0) ;
+  const lx0 = lerp(x0, left + r, mv), lx1 = lerp(x0 + (x1 - x0) * grow, right - r, mv), ly = lerp(y0, topY, mv);
+  const cl_ = $('#cl'); cl_.setAttribute('x1', lx0); cl_.setAttribute('x2', lx1); cl_.setAttribute('y1', ly); cl_.setAttribute('y2', ly);
+  cl_.setAttribute('stroke', rgb(mix([185, 131, 26], CARBON, mv))); cl_.setAttribute('stroke-width', lerp(4, 5, mv));
+  const tick = 16 * eOut(pr(t, 5.05, 5.35)) * (1 - mv);
+  [['#ct1', lx0], ['#ct2', lx1]].forEach(([s, xx], i) => { const e = $(s); const vis = i === 0 ? 1 : eOut(pr(t, 5.55, 5.8)); e.setAttribute('x1', xx); e.setAttribute('x2', xx); e.setAttribute('y1', ly - tick * vis); e.setAttribute('y2', ly + tick * vis); });
+  // etiqueta de la cota
+  const lk = eOut(pr(t, 5.45, 6.0)), lo = eIn(pr(t, 8.3, 8.6));
+  const lw = 150, lh = 52, lcx = (x0 + x1) / 2, lcy = y0 - 2;
+  const clr = $('#clr'); clr.setAttribute('x', lcx - lw / 2); clr.setAttribute('y', lcy - lh / 2); clr.setAttribute('width', lw); clr.setAttribute('height', lh);
+  $('#clt').setAttribute('x', lcx); $('#clt').setAttribute('y', lcy + 12);
+  $('#clab').setAttribute('transform', `translate(0 ${((1 - lk) * 30 - lo * 30).toFixed(1)})`);
+  $('#clab').style.opacity = lk * (1 - lo);
+  $('#clab').style.clipPath = `inset(${lo * 100}% 0 ${(1 - lk) * 100}% 0)`;
+  // contorno: dos mitades que bajan desde el borde superior
+  const half = (sgn) => `M ${P.x} ${topY} H ${P.x + sgn * (PHW * P.s / 2 - r)} A ${r} ${r} 0 0 ${sgn > 0 ? 1 : 0} ${P.x + sgn * PHW * P.s / 2} ${topY + r} V ${bot - r} A ${r} ${r} 0 0 ${sgn > 0 ? 1 : 0} ${P.x + sgn * (PHW * P.s / 2 - r)} ${bot} H ${P.x}`;
+  const draw = eIO(pr(t, 8.95, 9.65)), outFade = 1 - eOut(pr(t, 9.55, 9.95));
+  [['#oL', -1], ['#oR', 1]].forEach(([s, sg]) => {
+    const e = $(s); e.setAttribute('d', half(sg));
+    const len = e.getTotalLength(); const topLen = PHW * P.s / 2 - r;
+    e.style.strokeDasharray = len; e.style.strokeDashoffset = len - (topLen + (len - topLen) * draw);
+    e.style.opacity = t < 8.95 ? 0 : outFade;
+  });
+  cl_.style.opacity = t < 9.0 ? 1 : outFade;
+}
+
+/* ---------- Escena 7: la tabla sale del teléfono y una fila se vuelve el mensaje ---------- */
+function pintarCorte(t, C) {
+  const card = $('#corte'), veil = $('#veil'), bm = $('#bubbleMorph');
+  if (t < 31.2 || t > 35.0) { card.style.display = 'none'; veil.style.opacity = 0; bm.style.display = 'none'; return; }
+  // rectángulo de la tabla dentro del celular (recortado al ancho visible)
+  const tr0 = rectAt(560, '#tabla-cortes');
+  const a = s2v(C, p2r(t, 16, tr0[1])), b = s2v(C, p2r(t, 374, tr0[1] + tr0[3]));
+  const end = [70, 610, 940, 72 + FILAS.length * 70 + 96];
+  const k = eIO(pr(t, 31.3, 31.95));
+  const x = lerp(a[0], end[0], k), y = lerp(a[1], end[1], k), w = lerp(b[0] - a[0], end[2], k), h = lerp(b[1] - a[1], end[3], k);
+  const out = eIn(pr(t, 34.05, 34.55));
+  card.style.display = 'block';
+  card.style.left = x + 'px'; card.style.top = y + 'px'; card.style.width = end[2] + 'px'; card.style.height = end[3] + 'px';
+  card.style.transform = `scale(${(w / end[2]).toFixed(4)},${(h / end[3]).toFixed(4)}) translateY(${(out * 40).toFixed(1)}px)`;
+  card.style.opacity = (k < 0.02 ? 0 : 1) * (1 - out);
+  card.style.borderRadius = lerp(10, 28, k) + 'px';
+  veil.style.opacity = 0.55 * k * (1 - eIO(pr(t, 34.3, 34.8)));
+  FILAS.forEach((f, i) => {
+    const ti = 31.8 + i * 0.085, kk = eOut(pr(t, ti, ti + 0.7));
+    document.querySelectorAll(`#fila${i} .c > span`).forEach((s, j) => { s.style.transform = `translateY(${((1 - eOut(pr(t, ti + j * 0.05, ti + j * 0.05 + 0.7))) * 120).toFixed(1)}%)`; });
+    const hl = document.querySelector(`#fila${i} .hl`);
+    hl.style.transform = `scaleX(${i === HL ? eOut(pr(t, 33.45, 33.85)).toFixed(3) : 0})`;
+    hl.style.opacity = i === HL && t > 34.0 ? 0 : 1;
+  });
+  $('#pieTxt').style.transform = `translateY(${((1 - eOut(pr(t, 32.75, 33.4))) * 120).toFixed(1)}%)`;
+  // la fila resaltada se despega y se vuelve la burbuja del chat
+  if (t >= 34.0) {
+    const filaY = end[1] + 72 + HL * 70 + 6;
+    const from = [end[0] + 12, filaY, end[2] - 24, 58];
+    const c2 = camAt(34.9), p = s2v(c2, p2s(34.9, 12, 160)), q = s2v(c2, p2s(34.9, 348, 640));
+    const to = [p[0], p[1], q[0] - p[0], q[1] - p[1]];
+    const m = eIO(pr(t, 34.0, 34.85));
+    bm.style.cssText = `display:${t < 34.95 ? 'block' : 'none'};left:${lerp(from[0], to[0], m)}px;top:${lerp(from[1], to[1], m)}px;width:${lerp(from[2], to[2], m)}px;height:${lerp(from[3], to[3], m)}px;border-radius:${lerp(14, 16, m)}px;background:${rgb(mix(MOSTAZA, [255, 255, 255], m))};opacity:${1 - eIn(pr(t, 34.82, 34.95))}`;
+  } else bm.style.display = 'none';
+}
+
+/* ---------- Escena 10: el teléfono se vuelve el botón ---------- */
+function pintarFin(t) {
+  const pill = $('#pillCta');
+  const fin = $('#fin'); fin.style.display = t > 44.6 ? 'block' : 'none';
+  fin.style.transform = `scale(${lerp(1, 1.025, eIO(pr(t, 45.5, 49.4)))})`;
+  if (t < 44.7) { pill.style.display = 'none'; return; }
+  const from = [226, 559.8, 628, 1326.5], to = [190, 1262, 700, 128];
+  const k = eIO(pr(t, 44.72, 45.6));
+  pill.style.display = 'block';
+  pill.style.left = lerp(from[0], to[0], k) + 'px'; pill.style.top = lerp(from[1], to[1], k) + 'px';
+  pill.style.width = lerp(from[2], to[2], k) + 'px'; pill.style.height = lerp(from[3], to[3], k) + 'px';
+  pill.style.borderRadius = lerp(78, 64, k) + 'px';
+  pill.style.background = rgb(mix([21, 19, 17], MOSTAZA, eIO(pr(t, 44.9, 45.5))));
+  $('#ctaTxt').innerHTML = '<span style="display:inline-block">Pedí tu demo gratis&nbsp;&nbsp;→</span>';
+  const ky = (1 - eOut(pr(t, 45.72, 46.4))) * 140;
+  $('#ctaTxt').style.clipPath = 'inset(0)'; $('#ctaTxt').firstChild.style.transform = `translateY(${ky.toFixed(1)}%)`;
+  // logo: sube desde atrás de un borde invisible
+  const kl = eOut(pr(t, 46.05, 46.85));
+  $('#logo').style.transform = `translateY(${((1 - kl) * 330).toFixed(1)}px) rotate(${lerp(4, -4, kl).toFixed(2)}deg)`;
+}
+
+window.renderFrame = renderFrame;
+window.listo = (async () => { await document.fonts.ready; await new Promise((r) => setTimeout(r, 200)); return true; })();
+</script>
+</body>
+</html>
