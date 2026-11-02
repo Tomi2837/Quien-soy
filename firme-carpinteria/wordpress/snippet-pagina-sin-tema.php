@@ -1,25 +1,25 @@
 <?php
 /**
- * Snippet "Demo Firme Carpintería: página 1384 a pantalla completa (sin tema)"
+ * Snippet "Demos a pantalla completa (páginas con HTML completo, sin tema)"
  * Instalado en nalta.com.ar con el plugin Code Snippets (ID 37, alcance: front-end, prioridad 1).
  *
- * Muestra la demo HTML guardada en la página 1384 tal cual: sin encabezado del tema,
- * barra de WordPress ni botones flotantes. Para volver a la página normal, desactivá
- * el snippet en Fragmentos de código. Para otra demo, cambiá el ID de la página.
+ * Toda página cuyo contenido sea un documento HTML completo (empieza con <!doctype html>,
+ * por ejemplo pegado en un bloque "HTML personalizado") se muestra tal cual: sin encabezado
+ * del tema, barra de WordPress ni botones flotantes. Las páginas normales no se ven afectadas.
+ * Para una demo nueva alcanza con crear la página y pegar el HTML: no hay que tocar este código.
  */
 add_action( 'template_redirect', function () {
-	// Solo la página de la demo (ID 1384)
-	if ( ! is_page( 1384 ) ) {
+	if ( ! is_page() ) {
 		return;
 	}
-	$html = get_post_field( 'post_content', 1384, 'raw' );
+	$html = get_post_field( 'post_content', get_queried_object_id(), 'raw' );
+	// Solo páginas cuyo contenido es un documento HTML completo (las demos)
+	if ( ! preg_match( '/^\s*(<!-- wp:html -->\s*)?<!doctype html/i', $html ) ) {
+		return;
+	}
 	// Quitar el envoltorio del bloque HTML de Gutenberg
 	$html = preg_replace( '/^\s*<!-- wp:html -->\s*/', '', $html );
 	$html = preg_replace( '/\s*<!-- \/wp:html -->\s*$/', '', $html );
-	// Si no es un documento HTML completo, dejar que WordPress muestre la página normal
-	if ( stripos( $html, '<html' ) === false ) {
-		return;
-	}
 	status_header( 200 );
 	header( 'Content-Type: text/html; charset=UTF-8' );
 	echo $html;
